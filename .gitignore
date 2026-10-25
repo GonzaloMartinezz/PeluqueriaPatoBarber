@@ -1,0 +1,15 @@
+# Dependencias y builds
+node_modules
+dist
+
+# Variables locales (el front solo usa VITE_GOOGLE_CLIENT_ID, que es público)
+.env
+.env.local
+.env.*.local
+
+# Configuración local del asistente / editor
+.claude/settings.local.json
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+npm-debug.log*
