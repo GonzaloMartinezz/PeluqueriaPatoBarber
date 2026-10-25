@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { MapPin, Clock, Instagram, Phone } from 'lucide-react';
 import useBusiness, { DAY_LABELS, todayKey } from '../../lib/useBusiness';
 
@@ -12,6 +13,8 @@ const LocationSection = () => {
   const handle = b?.instagram?.replace(/^@/, '').trim();
   const phoneDigits = b?.phone?.replace(/\D/g, '');
   const today = todayKey();
+  // El mapa de Google recién se carga si la persona lo pide: así Google no recibe la visita de quien no lo mira.
+  const [showMap, setShowMap] = useState(false);
 
   return (
     <section id="ubicacion" className="py-16 sm:py-24 bg-dark-bg border-t border-dark-border" aria-labelledby="loc-title">
@@ -55,7 +58,7 @@ const LocationSection = () => {
                           }`}
                         >
                           <dt>{label}{key === today && <span className="ml-2 text-cyan font-mono text-[11px] tracking-widest">HOY</span>}</dt>
-                          <dd>{h?.isOpen ? `${h.open} – ${h.close}` : 'Cerrado'}</dd>
+                          <dd className="text-right">{h?.isOpen ? h.shifts.map((t) => `${t.open} – ${t.close}`).join('  ·  ') : 'Cerrado'}</dd>
                         </div>
                       );
                     })}
@@ -85,13 +88,27 @@ const LocationSection = () => {
           </div>
 
           <div className="h-[320px] sm:h-[420px] lg:h-[520px] bg-dark-surface border border-dark-border rounded-md overflow-hidden">
-            <iframe
-              title={`Mapa: ${address}`}
-              src={`https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`}
-              className="map-frame w-full h-full border-0"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+            {showMap ? (
+              <iframe
+                title={`Mapa: ${address}`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`}
+                className="map-frame w-full h-full border-0"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center gap-4 p-6 text-center">
+                <MapPin size={40} className="text-cyan" aria-hidden="true" />
+                <p className="text-gray-200 max-w-xs">{address}</p>
+                <button
+                  type="button"
+                  onClick={() => setShowMap(true)}
+                  className="min-h-12 px-6 rounded-xl bg-cyan text-black font-bebas tracking-widest text-lg hover:bg-white transition-colors"
+                >
+                  VER MAPA
+                </button>
+                <p className="text-muted text-sm max-w-xs">Al ver el mapa se carga Google Maps y Google recibe tu visita.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

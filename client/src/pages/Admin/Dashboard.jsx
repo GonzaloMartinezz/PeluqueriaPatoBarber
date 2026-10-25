@@ -1,39 +1,76 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Banknote, UserPlus, Users } from 'lucide-react';
+import { ArrowRight, Banknote, CalendarDays, Scale, Scissors, UserPlus, Users } from 'lucide-react';
 import api, { errMsg } from '../../lib/api';
-import { Alert, Card, Loading, PageTitle, StatusBadge } from '../../components/ui';
-import { fmt, fmtDate, fmtLong, money } from '../../lib/dates';
+import { Alert, Button, Loading, PageTitle, StatusBadge } from '../../components/ui';
+import { fmt, fmtLong, money } from '../../lib/dates';
+import { greeting } from '../../lib/useBusiness';
+import useAuth from '../../store/auth';
 
 const tip = {
-  contentStyle: { background: 'var(--color-dark-surface)', border: '1px solid var(--color-dark-border)', borderRadius: 6, fontSize: 12, color: 'var(--color-white)' },
-  labelStyle: { color: 'var(--color-white)' },
+  contentStyle: { background: 'var(--color-dark-surface)', border: '1px solid var(--color-dark-border)', borderRadius: 12, fontSize: 14, color: 'var(--color-white)', padding: '10px 14px' },
+  labelStyle: { color: 'var(--color-white)', fontWeight: 700 },
   itemStyle: { color: 'var(--color-white)' },
 };
 
-function PeriodCard({ label, sub, s }) {
+const panel = 'bg-dark-surface border border-dark-border rounded-3xl p-6 sm:p-8';
+
+/* Tarjeta grande de un período (hoy / semana / mes). */
+function PeriodCard({ icon: Icon, label, sub, s }) {
+  const done = s.clients ? Math.round((s.completed / s.clients) * 100) : 0;
   return (
-    <Card className="p-4 sm:p-5">
-      <p className="text-cyan font-mono text-xs tracking-[0.3em] uppercase">{label}</p>
-      <p className="text-muted text-xs mb-4">{sub}</p>
-      <div className="grid grid-cols-2 gap-4">
+    <section aria-label={label} className={`${panel} flex flex-col`}>
+      <div className="flex items-center gap-4 mb-6">
+        <span aria-hidden="true" className="w-12 h-12 rounded-2xl bg-cyan-dim text-cyan flex items-center justify-center"><Icon size={24} /></span>
         <div>
-          <p className="text-muted font-mono text-xs tracking-widest flex items-center gap-1"><Users size={12} aria-hidden="true" /> CLIENTES</p>
-          <p className="text-4xl sm:text-5xl font-bebas text-white leading-none mt-1">{s.clients}</p>
-          <p className="text-muted text-xs mt-1">{s.completed} atendidos</p>
-        </div>
-        <div>
-          <p className="text-muted font-mono text-xs tracking-widest flex items-center gap-1"><Banknote size={12} aria-hidden="true" /> GANADO</p>
-          <p className="text-3xl font-bebas text-free leading-none mt-2">{money(s.revenue)}</p>
-          <p className="text-muted text-xs mt-2">Estimado: {money(s.projected)}</p>
+          <h2 className="font-sans font-extrabold text-2xl leading-tight">{label}</h2>
+          <p className="text-muted text-[15px]">{sub}</p>
         </div>
       </div>
-    </Card>
+
+      <p className="text-gray-300 font-semibold flex items-center gap-2"><Users size={18} aria-hidden="true" /> Clientes</p>
+      <p className="font-bebas text-8xl leading-none mt-1 text-white">{s.clients}</p>
+      <div className="mt-4" role="img" aria-label={`${s.completed} de ${s.clients} atendidos`}>
+        <div className="h-3 rounded-full bg-dark-surface2 overflow-hidden"><div className="h-full rounded-full bg-free" style={{ width: `${done}%` }} /></div>
+        <p className="text-[15px] text-gray-300 mt-2">{s.completed} atendidos de {s.clients}</p>
+      </div>
+
+      <div className="mt-6 pt-6 border-t border-dark-border grid grid-cols-2 gap-4">
+        <div>
+          <p className="text-gray-300 font-semibold flex items-center gap-2"><Banknote size={18} aria-hidden="true" /> Cobrado</p>
+          <p className="font-sans font-extrabold text-3xl text-emerald-200 mt-1">{money(s.revenue)}</p>
+        </div>
+        <div>
+          <p className="text-gray-300 font-semibold">Estimado</p>
+          <p className="font-sans font-extrabold text-3xl mt-1">{money(s.projected)}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* Lista con barras horizontales (medios de pago, servicios). */
+function BarList({ rows, empty, valueOf, labelOf, suffix }) {
+  if (!rows.length) return <p className="text-muted">{empty}</p>;
+  const max = Math.max(...rows.map(valueOf), 1);
+  return (
+    <ul className="space-y-4">
+      {rows.map((r) => (
+        <li key={labelOf(r)}>
+          <div className="flex items-baseline justify-between gap-3 mb-1.5">
+            <span className="font-semibold">{labelOf(r)}</span>
+            <span className="text-gray-300 text-[15px]">{suffix(r)}</span>
+          </div>
+          <div className="h-2.5 rounded-full bg-dark-surface2 overflow-hidden"><div className="h-full rounded-full bg-cyan" style={{ width: `${(valueOf(r) / max) * 100}%` }} /></div>
+        </li>
+      ))}
+    </ul>
   );
 }
 
 export default function Dashboard() {
+  const user = useAuth((s) => s.user);
   const [stats, setStats] = useState(null);
   const [today, setToday] = useState([]);
   const [metric, setMetric] = useState('clients');
@@ -51,95 +88,121 @@ export default function Dashboard() {
   if (!stats) return <Loading />;
 
   const chart = stats.chart.map((c) => ({ ...c, label: fmt(c.date, 'd MMM') }));
+  const axis = { stroke: 'var(--color-muted)', fontSize: 13 };
 
   return (
     <div className="space-y-8">
-      <PageTitle eyebrow="RESUMEN" title="Control de la peluquería">{fmtLong(stats.today)}</PageTitle>
+      <PageTitle
+        eyebrow="RESUMEN"
+        title={`${greeting()}, ${user?.name || ''}`}
+        actions={<Link to="/admin/agenda"><Button className="rounded-full px-7"><CalendarDays size={22} aria-hidden="true" /> VER AGENDA</Button></Link>}
+      >
+        {fmtLong(stats.today)}. Así viene la peluquería.
+      </PageTitle>
 
-      <div className="grid md:grid-cols-3 gap-4">
-        <PeriodCard label="Hoy" sub={fmt(stats.today, 'EEEE d')} s={stats.day} />
-        <PeriodCard label="Esta semana" sub={`${fmt(stats.week.from, 'd MMM')} – ${fmt(stats.week.to, 'd MMM')}`} s={stats.week} />
-        <PeriodCard label="Este mes" sub={fmt(stats.today, 'MMMM yyyy')} s={stats.month} />
+      {stats.legalComplete === false && (
+        <Link to="/admin/configuracion" className="flex items-center gap-4 rounded-3xl border border-amber-400/50 bg-amber-400/10 p-5 text-amber-200 hover:bg-amber-400/20 transition-colors">
+          <Scale size={26} aria-hidden="true" className="shrink-0" />
+          <span className="flex-1"><b className="block text-lg">Completá tus datos legales</b>Faltan el nombre, CUIT, domicilio o email del titular que se muestran en la Política de Privacidad.</span>
+          <ArrowRight size={22} aria-hidden="true" />
+        </Link>
+      )}
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <PeriodCard icon={CalendarDays} label="Hoy" sub={fmtLong(stats.today)} s={stats.day} />
+        <PeriodCard icon={CalendarDays} label="Esta semana" sub={`${fmt(stats.week.from, 'd MMM')} al ${fmt(stats.week.to, 'd MMM')}`} s={stats.week} />
+        <PeriodCard icon={CalendarDays} label="Este mes" sub={fmt(stats.today, 'MMMM yyyy')} s={stats.month} />
       </div>
-      <p className="text-muted text-xs -mt-4">
-        <b className="text-gray-300">Ganado</b> = turnos marcados como completados. <b className="text-gray-300">Estimado</b> = todos los turnos no cancelados.
+      <p className="text-gray-300 text-[15px] -mt-3">
+        <b className="text-white">Cobrado</b> = turnos que marcaste como completados. <b className="text-white">Estimado</b> = todos los turnos no cancelados.
       </p>
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="p-5 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bebas tracking-wider">Últimos 30 días</h2>
-            <div className="flex rounded-sm overflow-hidden border border-dark-border text-sm">
+      <div className="grid gap-6 xl:grid-cols-3">
+        <section className={`${panel} xl:col-span-2`} aria-label="Últimos 30 días">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <h2 className="font-sans font-extrabold text-2xl">Últimos 30 días</h2>
+            <div role="group" aria-label="Qué mostrar" className="flex rounded-xl overflow-hidden border border-white/20">
               {[['clients', 'Clientes'], ['revenue', 'Dinero']].map(([k, l]) => (
-                <button key={k} onClick={() => setMetric(k)}
-                  className={`px-3 py-1.5 font-bebas tracking-widest ${metric === k ? 'bg-cyan text-black' : 'text-gray-300'}`}>{l}</button>
+                <button key={k} aria-pressed={metric === k} onClick={() => setMetric(k)} className={`h-11 px-6 font-bebas tracking-widest text-lg ${metric === k ? 'bg-cyan text-black' : 'text-gray-200 hover:bg-cyan-dim'}`}>{l}</button>
               ))}
             </div>
           </div>
-          <div className="h-64">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               {metric === 'clients' ? (
                 <BarChart data={chart}>
                   <CartesianGrid stroke="var(--color-dark-border)" vertical={false} />
-                  <XAxis dataKey="label" stroke="var(--color-muted)" fontSize={11} interval={4} />
-                  <YAxis stroke="var(--color-muted)" fontSize={11} allowDecimals={false} width={28} />
-                  <Tooltip {...tip} formatter={(v) => [v, 'Clientes']} />
-                  <Bar dataKey="clients" fill="var(--color-cyan)" radius={[2, 2, 0, 0]} />
+                  <XAxis dataKey="label" {...axis} interval={4} />
+                  <YAxis {...axis} allowDecimals={false} width={32} />
+                  <Tooltip {...tip} formatter={(v) => [v, 'Clientes']} cursor={{ fill: 'var(--color-cyan-dim)' }} />
+                  <Bar dataKey="clients" fill="var(--color-cyan)" radius={[6, 6, 0, 0]} />
                 </BarChart>
               ) : (
                 <AreaChart data={chart}>
                   <CartesianGrid stroke="var(--color-dark-border)" vertical={false} />
-                  <XAxis dataKey="label" stroke="var(--color-muted)" fontSize={11} interval={4} />
-                  <YAxis stroke="var(--color-muted)" fontSize={11} width={50} tickFormatter={(v) => `$${v / 1000}k`} />
-                  <Tooltip {...tip} formatter={(v) => [money(v), 'Ganado']} />
-                  <Area dataKey="revenue" stroke="var(--color-free)" fill="color-mix(in srgb, var(--color-free) 20%, transparent)" />
+                  <XAxis dataKey="label" {...axis} interval={4} />
+                  <YAxis {...axis} width={56} tickFormatter={(v) => `$${v / 1000}k`} />
+                  <Tooltip {...tip} formatter={(v) => [money(v), 'Cobrado']} />
+                  <Area dataKey="revenue" stroke="var(--color-free)" strokeWidth={3} fill="color-mix(in srgb, var(--color-free) 20%, transparent)" />
                 </AreaChart>
               )}
             </ResponsiveContainer>
           </div>
-        </Card>
+        </section>
 
-        <div className="space-y-4">
-          <Card className="p-5">
-            <p className="text-muted font-mono text-xs tracking-widest flex items-center gap-1"><UserPlus size={12} /> CLIENTES REGISTRADOS</p>
-            <p className="text-5xl font-bebas leading-none mt-2">{stats.registeredClients}</p>
-            <p className="text-muted text-xs mt-1">{stats.newClientsThisMonth} nuevos este mes · <Link to="/admin/clientes" className="text-cyan underline underline-offset-4">ver lista</Link></p>
-          </Card>
-          <Card className="p-5">
-            <h3 className="text-xl font-bebas tracking-wider mb-2">Medios de pago (mes)</h3>
-            {stats.byPayment.length ? stats.byPayment.map((p) => (
-              <div key={p.method} className="flex justify-between text-sm py-1 border-b border-dark-border/50 last:border-0">
-                <span className="text-gray-300">{p.method} <span className="text-muted">×{p.count}</span></span>
-                <span className="font-mono">{money(p.total)}</span>
-              </div>
-            )) : <p className="text-muted text-sm">Sin turnos este mes.</p>}
-          </Card>
-          <Card className="p-5">
-            <h3 className="text-xl font-bebas tracking-wider mb-2">Servicios más pedidos (mes)</h3>
-            {stats.topServices.length ? stats.topServices.map((s) => (
-              <div key={s.name} className="flex justify-between text-sm py-1 border-b border-dark-border/50 last:border-0">
-                <span className="text-gray-300">{s.name}</span><span className="font-mono">×{s.count}</span>
-              </div>
-            )) : <p className="text-muted text-sm">Sin turnos este mes.</p>}
-          </Card>
-        </div>
+        <section className={panel} aria-label="Clientes registrados">
+          <div className="flex items-center gap-4 mb-5">
+            <span aria-hidden="true" className="w-12 h-12 rounded-2xl bg-cyan-dim text-cyan flex items-center justify-center"><UserPlus size={24} /></span>
+            <h2 className="font-sans font-extrabold text-2xl">Clientes registrados</h2>
+          </div>
+          <p className="font-bebas text-8xl leading-none">{stats.registeredClients}</p>
+          <p className="text-gray-300 mt-3 text-[15px]">
+            {stats.newClientsThisMonth} {stats.newClientsThisMonth === 1 ? 'nuevo' : 'nuevos'} este mes
+          </p>
+          <Link to="/admin/clientes" className="mt-5 inline-flex items-center gap-2 font-bold text-cyan underline underline-offset-4 min-h-11">
+            Ver todos los clientes <ArrowRight size={18} aria-hidden="true" />
+          </Link>
+        </section>
       </div>
 
-      <Card className="p-5">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-2xl font-bebas tracking-wider">Agenda de hoy</h2>
-          <Link to="/admin/agenda" className="text-cyan font-mono text-xs tracking-widest">VER AGENDA COMPLETA →</Link>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <section className={panel} aria-label="Medios de pago">
+          <h2 className="font-sans font-extrabold text-2xl mb-6">Medios de pago <span className="text-muted text-base font-semibold">· este mes</span></h2>
+          <BarList rows={stats.byPayment} empty="Todavía no hay turnos este mes." valueOf={(r) => r.total} labelOf={(r) => r.method} suffix={(r) => `${r.count} ${r.count === 1 ? 'turno' : 'turnos'} · ${money(r.total)}`} />
+        </section>
+        <section className={panel} aria-label="Servicios más pedidos">
+          <h2 className="font-sans font-extrabold text-2xl mb-6"><Scissors size={22} aria-hidden="true" className="inline -mt-1 mr-2 text-cyan" />Servicios más pedidos <span className="text-muted text-base font-semibold">· este mes</span></h2>
+          <BarList rows={stats.topServices} empty="Todavía no hay turnos este mes." valueOf={(r) => r.count} labelOf={(r) => r.name} suffix={(r) => `${r.count} ${r.count === 1 ? 'vez' : 'veces'}`} />
+        </section>
+      </div>
+
+      <section className={panel} aria-label="Agenda de hoy">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <h2 className="font-sans font-extrabold text-2xl sm:text-3xl">Agenda de hoy</h2>
+          <Link to="/admin/agenda" className="inline-flex items-center gap-2 font-bold text-cyan underline underline-offset-4 min-h-11">Abrir agenda completa <ArrowRight size={18} aria-hidden="true" /></Link>
         </div>
-        {today.length ? today.map((a) => (
-          <div key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2 border-b border-dark-border/50 last:border-0">
-            <span className="font-mono text-cyan w-24">{a.startTime}–{a.endTime}</span>
-            <span className="flex-1 min-w-[140px]">{a.name} <span className="text-muted text-sm">· {a.serviceName}</span></span>
-            <span className="text-sm text-muted">{a.paymentMethod}</span>
-            <StatusBadge status={a.status} />
+        {today.length ? (
+          <ul className="divide-y divide-dark-border">
+            {today.map((a) => (
+              <li key={a.id} className="flex flex-wrap items-center gap-x-6 gap-y-2 py-4">
+                <span className="font-mono font-bold text-lg text-cyan w-36">{a.startTime} – {a.endTime}</span>
+                <span className="flex-1 min-w-[12rem]">
+                  <span className="block font-bold text-lg">{a.name}</span>
+                  <span className="block text-gray-300 text-[15px]">{a.serviceName}</span>
+                </span>
+                <span className="text-gray-300 text-[15px] w-36">{a.paymentMethod || 'Pago sin definir'}</span>
+                <span className="font-extrabold text-lg w-28 text-right">{money(a.price)}</span>
+                <StatusBadge status={a.status} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-center py-12">
+            <p className="font-sans font-bold text-xl">No hay turnos para hoy</p>
+            <p className="text-gray-300 mt-1">Cuando un cliente reserve, lo vas a ver acá.</p>
           </div>
-        )) : <p className="text-muted text-sm">No hay turnos para hoy.</p>}
-      </Card>
-      <p className="text-muted text-xs">Datos al {fmtDate(stats.today)}.</p>
+        )}
+      </section>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import LegalLinks from '../../components/LegalLinks';
 import HeroSection from './HeroSection';
 import HowItWorks from './HowItWorks';
 import ServicesSection from './ServicesSection';
@@ -28,6 +29,7 @@ const LandingPage = () => {
           <p className="text-muted text-xs font-mono tracking-widest uppercase">
             © {new Date().getFullYear()} Pato Barber · San Miguel de Tucumán
           </p>
+          <LegalLinks className="justify-center mt-3" />
         </div>
       </footer>
     </div>

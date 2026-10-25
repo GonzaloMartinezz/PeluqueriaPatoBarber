@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { STATUS_LABEL } from '../lib/dates';
 
 export const inputCls =
-  'w-full min-h-11 bg-dark-bg border border-white/20 rounded-sm px-3 py-2.5 text-base sm:text-sm text-white placeholder:text-muted/80 hover:border-white/35 focus:border-cyan disabled:opacity-50';
+  'w-full min-h-12 bg-dark-bg border border-white/20 rounded-xl px-4 py-3 text-base text-white placeholder:text-muted/80 hover:border-white/35 focus:border-cyan disabled:opacity-50';
 
 export const Spinner = ({ className = '' }) => (
   <div
@@ -30,7 +30,7 @@ export function Button({ variant = 'primary', className = '', type = 'button', .
   return (
     <button
       type={type}
-      className={`inline-flex items-center justify-center gap-2 min-h-11 font-bebas tracking-widest px-5 py-2 rounded-sm text-base transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 min-h-12 font-bebas tracking-widest px-6 py-2 rounded-xl text-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
       {...props}
     />
   );
@@ -39,9 +39,9 @@ export function Button({ variant = 'primary', className = '', type = 'button', .
 export function Field({ label, hint, children, className = '' }) {
   return (
     <label className={`block ${className}`}>
-      <span className="block text-muted font-mono text-xs tracking-widest uppercase mb-1.5">{label}</span>
+      <span className="block text-gray-300 font-semibold text-sm mb-2">{label}</span>
       {children}
-      {hint && <span className="block text-muted text-xs mt-1">{hint}</span>}
+      {hint && <span className="block text-muted text-sm mt-1.5">{hint}</span>}
     </label>
   );
 }
@@ -51,14 +51,17 @@ export const Card = ({ className = '', children }) => (
 );
 
 export const Eyebrow = ({ children }) => (
-  <span className="text-cyan font-mono text-xs tracking-[0.3em] uppercase block mb-2">// {children}</span>
+  <span className="text-cyan font-mono text-sm tracking-[0.25em] uppercase block mb-2">// {children}</span>
 );
 
-export const PageTitle = ({ eyebrow, title, children }) => (
-  <header className="mb-6">
-    {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bebas tracking-wider leading-none">{title}</h1>
-    {children && <p className="text-muted text-sm mt-2 max-w-2xl">{children}</p>}
+export const PageTitle = ({ eyebrow, title, children, actions }) => (
+  <header className="mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+    <div className="min-w-0">
+      {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bebas tracking-wider leading-none">{title}</h1>
+      {children && <p className="text-gray-300 text-base lg:text-lg mt-3 max-w-2xl">{children}</p>}
+    </div>
+    {actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
   </header>
 );
 
@@ -135,10 +138,11 @@ export function Modal({ open, onClose, title, children, wide = false }) {
 }
 
 const STATUS_STYLE = {
-  pending: 'bg-amber-400/15 text-amber-200 border-amber-400/40',
-  confirmed: 'bg-cyan/10 text-cyan border-cyan/40',
-  completed: 'bg-free/15 text-emerald-200 border-free/40',
-  cancelled: 'bg-busy/15 text-rose-200 border-busy/40',
+  // Fondo sólido: la etiqueta se lee igual aunque esté sobre un bloque de color.
+  pending: 'bg-dark-surface text-amber-200 border-amber-400/60',
+  confirmed: 'bg-dark-surface text-cyan border-cyan/50',
+  completed: 'bg-dark-surface text-emerald-200 border-free/60',
+  cancelled: 'bg-dark-surface text-rose-200 border-busy/60',
 };
 
 export const StatusBadge = ({ status }) => (

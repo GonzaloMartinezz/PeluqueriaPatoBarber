@@ -1,6 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { CalendarDays, Home, MapPin, Scissors } from 'lucide-react';
+import { CalendarDays, Home, MapPin, Scissors, UserRound } from 'lucide-react';
 import Navbar from './Navbar';
+import LegalLinks from './LegalLinks';
 
 const tab = 'flex-1 flex flex-col items-center justify-center gap-0.5 min-h-16 text-xs font-semibold transition-colors';
 
@@ -17,6 +18,9 @@ export default function ClientShell({ children }) {
       </div>
 
       <main id="main">{children}</main>
+      <footer className="px-4 pb-8 pt-2">
+        <LegalLinks className="justify-center" />
+      </footer>
 
       <nav
         aria-label="Navegación principal"
@@ -34,6 +38,9 @@ export default function ClientShell({ children }) {
         <a href="/#ubicacion" className={`${tab} ${active(false)}`}>
           <MapPin size={22} aria-hidden="true" /> Ubicación
         </a>
+        <NavLink to="/mi-cuenta" className={() => `${tab} ${active(pathname === '/mi-cuenta')}`}>
+          <UserRound size={22} aria-hidden="true" /> Cuenta
+        </NavLink>
       </nav>
     </div>
   );

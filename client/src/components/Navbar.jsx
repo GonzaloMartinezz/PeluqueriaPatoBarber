@@ -34,6 +34,7 @@ const Navbar = () => {
             <a href="/#servicios" className={link}>SERVICIOS</a>
             <a href="/#ubicacion" className={link}>UBICACIÓN</a>
             {user && <Link to="/mis-turnos" className={link}>MIS TURNOS</Link>}
+            {user && <Link to="/mi-cuenta" className={link}>MI CUENTA</Link>}
             {user?.role === 'admin' && (
               <Link to="/admin" className={link}>
                 <LayoutDashboard size={14} aria-hidden="true" /> PANEL
@@ -70,6 +71,7 @@ const Navbar = () => {
             <a href="/#servicios" className={`${link} py-3`}>SERVICIOS</a>
             <a href="/#ubicacion" className={`${link} py-3`}>UBICACIÓN</a>
             {user && <Link to="/mis-turnos" className={`${link} py-3`}>MIS TURNOS</Link>}
+            {user && <Link to="/mi-cuenta" className={`${link} py-3`}>MI CUENTA</Link>}
             {user?.role === 'admin' && <Link to="/admin" className={`${link} py-3`}>PANEL DE ADMINISTRADOR</Link>}
             {user ? (
               <button onClick={exit} className={`${link} py-3`}>CERRAR SESIÓN ({user.name})</button>

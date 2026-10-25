@@ -68,6 +68,19 @@ const useAuth = create((set, get) => {
       return data.user;
     },
 
+    changePassword: async (currentPassword, newPassword) =>
+      startSession((await api.post('/auth/password', { currentPassword, newPassword })).data),
+    // Cierra la sesión en todos los dispositivos (también en este).
+    logoutAll: async () => {
+      await api.post('/auth/logout-all');
+      clear();
+    },
+    // Elimina la cuenta y los datos personales (derecho de supresión).
+    deleteAccount: async () => {
+      await api.delete('/auth/me', { data: { confirm: 'ELIMINAR' } });
+      clear();
+    },
+
     logout: async () => {
       try {
         await api.post('/auth/logout'); // el servidor borra la cookie

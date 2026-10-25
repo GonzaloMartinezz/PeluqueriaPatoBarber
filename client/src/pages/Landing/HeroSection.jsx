@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { CalendarCheck, Clock, Zap } from 'lucide-react';
 import useBusiness, { todayLine } from '../../lib/useBusiness';
 
-const PHOTO =
-  'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1400&auto=format&fit=crop';
+// Foto propia (guardada en /public): no se pide nada a servidores de terceros.
+const PHOTO = '/hero.jpg';
 
 // Portada: encabezado celeste (igual que la app del cliente) + la foto del local como tarjeta.
 const HeroSection = () => {

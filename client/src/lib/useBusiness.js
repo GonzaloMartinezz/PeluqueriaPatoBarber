@@ -38,7 +38,11 @@ export function todayLine(config) {
   const t = config?.today;
   if (!t) return null;
   if (t.status === 'open') return { open: true, text: `Abierto hoy hasta ${t.close} hs` };
-  if (t.status === 'later') return { open: false, text: `Hoy abrimos a las ${t.open} hs` };
+  if (t.status === 'later') {
+    // Con horario cortado, después del turno de la mañana el local "vuelve a abrir".
+    const afterBreak = t.shifts?.length > 1 && t.open !== t.shifts[0].open;
+    return { open: false, text: afterBreak ? `Abrimos de nuevo a las ${t.open} hs` : `Hoy abrimos a las ${t.open} hs` };
+  }
   if (t.status === 'ended') return { open: false, text: 'Cerrado por hoy' };
   return { open: false, text: t.reason && t.reason !== 'Cerrado' ? `Hoy cerrado · ${t.reason}` : 'Hoy no abrimos' };
 }

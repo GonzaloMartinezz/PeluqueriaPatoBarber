@@ -8,9 +8,9 @@ const csp = (apiOrigin) =>
   [
     "default-src 'self'",
     "script-src 'self' https://accounts.google.com/gsi/client",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https://images.unsplash.com https://*.googleusercontent.com",
+    "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
+    "font-src 'self'",
+    "img-src 'self' data: https://*.googleusercontent.com",
     "frame-src https://accounts.google.com https://www.google.com",
     `connect-src 'self' https://accounts.google.com ${apiOrigin}`.trim(),
     "object-src 'none'",
@@ -29,6 +29,9 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+    },
     plugins: [
       react(),
       {
@@ -41,7 +44,7 @@ export default defineConfig(({ mode }) => {
     server: {
       // El front llama a /api y Vite lo reenvía al backend (mismo origen: las cookies funcionan sin CORS).
       proxy: {
-        '/api': 'http://localhost:5000',
+        '/api': process.env.API_PROXY || 'http://localhost:5000',
       },
     },
   }

@@ -4,6 +4,7 @@ import useAuth from './store/auth';
 import { RequireAuth } from './components/guards';
 import { Loading } from './components/ui';
 import { ConfirmProvider } from './components/confirm';
+import CookieNotice from './components/CookieNotice';
 
 const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
 const Login = lazy(() => import('./pages/Auth/Login'));
@@ -16,6 +17,12 @@ const AdminAgenda = lazy(() => import('./pages/Admin/AdminAgenda'));
 const Clients = lazy(() => import('./pages/Admin/Clients'));
 const ServicesAdmin = lazy(() => import('./pages/Admin/ServicesAdmin'));
 const Settings = lazy(() => import('./pages/Admin/Settings'));
+const Terms = lazy(() => import('./pages/Legal/Terms'));
+const Privacy = lazy(() => import('./pages/Legal/Privacy'));
+const Cookies = lazy(() => import('./pages/Legal/Cookies'));
+const Account = lazy(() => import('./pages/Booking/Account'));
+const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/Auth/ResetPassword'));
 
 function App() {
   const init = useAuth((s) => s.init);
@@ -32,10 +39,18 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/recuperar" element={<ForgotPassword />} />
+          <Route path="/restablecer" element={<ResetPassword />} />
+
+          {/* Páginas legales: públicas, sin sesión */}
+          <Route path="/terminos" element={<Terms />} />
+          <Route path="/privacidad" element={<Privacy />} />
+          <Route path="/cookies" element={<Cookies />} />
 
           {/* La agenda solo se ve con sesión iniciada */}
           <Route path="/reservar" element={<RequireAuth><BookingPage /></RequireAuth>} />
           <Route path="/mis-turnos" element={<RequireAuth><MyAppointments /></RequireAuth>} />
+          <Route path="/mi-cuenta" element={<RequireAuth><Account /></RequireAuth>} />
 
           <Route path="/admin" element={<RequireAuth admin><AdminLayout /></RequireAuth>}>
             <Route index element={<Dashboard />} />
@@ -48,6 +63,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
+        <CookieNotice />
       </ConfirmProvider>
     </Router>
   );

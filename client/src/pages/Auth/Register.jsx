@@ -10,7 +10,7 @@ export default function Register() {
   const register = useAuth((s) => s.register);
   const navigate = useNavigate();
   const location = useLocation();
-  const [form, setForm] = useState({ name: '', lastName: '', email: '', phone: '', password: '' });
+  const [form, setForm] = useState({ name: '', lastName: '', email: '', phone: '', password: '', acceptTerms: false });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -39,6 +39,10 @@ export default function Register() {
       footer={<>¿Ya tenés cuenta? <Link to="/login" state={location.state} className="text-cyan underline underline-offset-4 hover:text-white">Ingresá</Link></>}
     >
       <GoogleButton onSuccess={done} onError={setError} />
+      <p className="text-center text-sm text-gray-300 mt-3">
+        Al continuar con Google aceptás los <Link to="/terminos" target="_blank" className="text-cyan underline underline-offset-4">Términos</Link> y la{' '}
+        <Link to="/privacidad" target="_blank" className="text-cyan underline underline-offset-4">Política de Privacidad</Link>.
+      </p>
       <OrDivider />
       <form onSubmit={submit} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
@@ -50,6 +54,13 @@ export default function Register() {
         <Field label="Contraseña" hint="Entre 8 y 72 caracteres. Evitá claves comunes.">
           <input type="password" required minLength={8} maxLength={72} className={inputCls} value={form.password} onChange={set('password')} autoComplete="new-password" />
         </Field>
+        <label className="flex items-start gap-3 text-[15px] text-gray-200 leading-snug">
+          <input type="checkbox" required checked={form.acceptTerms} onChange={(e) => setForm({ ...form, acceptTerms: e.target.checked })} className="mt-1 shrink-0" />
+          <span>
+            Leí y acepto los <Link to="/terminos" target="_blank" className="text-cyan underline underline-offset-4">Términos y condiciones</Link> y la{' '}
+            <Link to="/privacidad" target="_blank" className="text-cyan underline underline-offset-4">Política de Privacidad</Link>, y autorizo el tratamiento de mis datos para gestionar mis turnos.
+          </span>
+        </label>
         <Alert>{error}</Alert>
         <Button type="submit" className="w-full" disabled={busy}>{busy ? 'CREANDO…' : 'CREAR CUENTA'}</Button>
       </form>

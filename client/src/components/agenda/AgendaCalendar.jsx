@@ -257,40 +257,59 @@ function DayStrip({ days, cursor, onPick }) {
 function DayView({ day, admin, isSelected, onPick }) {
   if (!day) return null;
   if (!day.isOpen) return <ClosedNotice day={day} />;
+
+  // Horario cortado: las franjas se muestran por turno (mañana / tarde).
+  const groups = day.shifts.map((sh, i) => ({
+    title: sh.open < '13:00' ? 'Mañana' : 'Tarde',
+    range: `${sh.open} – ${sh.close}`,
+    slots: day.slots.filter((s) => s.shift === i),
+  }));
+
   return (
     <>
       <p className="text-muted text-xs font-mono tracking-wider mb-3 uppercase">
-        {day.open} – {day.close} · {day.free} libres · {day.busy} ocupados
+        {groups.map((g) => g.range).join(' · ')} · {day.free} libres · {day.busy} ocupados
         {day.reason ? ` · ${day.reason}` : ''}
       </p>
-      <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-        {day.slots.map((slot) => {
-          const appt = slot.appointment;
-          const Icon = STATUS_ICON[slot.status];
-          const clickable = slot.status === 'free' || (slot.status === 'busy' && admin);
-          const text =
-            slot.status === 'busy' && admin ? (appt.first ? `${appt.name} · ${appt.serviceName}` : '↳ continúa') : STATUS_TEXT[slot.status];
-          return (
-            <li key={slot.time}>
-              <button
-                disabled={!clickable}
-                aria-pressed={slot.status === 'free' ? isSelected(day.date, slot.time) : undefined}
-                aria-label={`${slot.time}, ${text}`}
-                onClick={() => onPick(day.date, slot)}
-                className={`w-full min-h-[3.25rem] border rounded-sm px-3 py-2 text-left transition-colors ${SLOT_STYLE[slot.status]} ${
-                  isSelected(day.date, slot.time) ? SELECTED : ''
-                }`}
-              >
-                <span className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-base font-bold">{slot.time}</span>
-                  <Icon size={16} strokeWidth={3} aria-hidden="true" className="shrink-0 opacity-90" />
-                </span>
-                <span className="block text-xs truncate">{text}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="space-y-5">
+        {groups.map((g) => (
+          <section key={g.range} aria-label={`Turno ${g.title.toLowerCase()}`}>
+            {groups.length > 1 && (
+              <h3 className="font-mono text-xs tracking-widest uppercase text-gray-300 mb-2">
+                {g.title} <span className="text-muted">· {g.range}</span>
+              </h3>
+            )}
+            <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+              {g.slots.map((slot) => {
+                const appt = slot.appointment;
+                const Icon = STATUS_ICON[slot.status];
+                const clickable = slot.status === 'free' || (slot.status === 'busy' && admin);
+                const text =
+                  slot.status === 'busy' && admin ? (appt.first ? `${appt.name} · ${appt.serviceName}` : '↳ continúa') : STATUS_TEXT[slot.status];
+                return (
+                  <li key={slot.time}>
+                    <button
+                      disabled={!clickable}
+                      aria-pressed={slot.status === 'free' ? isSelected(day.date, slot.time) : undefined}
+                      aria-label={`${slot.time}, ${text}`}
+                      onClick={() => onPick(day.date, slot)}
+                      className={`w-full min-h-[3.25rem] border rounded-sm px-3 py-2 text-left transition-colors ${SLOT_STYLE[slot.status]} ${
+                        isSelected(day.date, slot.time) ? SELECTED : ''
+                      }`}
+                    >
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-base font-bold">{slot.time}</span>
+                        <Icon size={16} strokeWidth={3} aria-hidden="true" className="shrink-0 opacity-90" />
+                      </span>
+                      <span className="block text-xs truncate">{text}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
     </>
   );
 }

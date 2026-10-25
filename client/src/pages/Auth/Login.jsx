@@ -36,6 +36,10 @@ export default function Login() {
       footer={<>¿No tenés cuenta? <Link to="/register" state={location.state} className="text-cyan underline underline-offset-4 hover:text-white">Registrate</Link></>}
     >
       <GoogleButton onSuccess={done} onError={setError} />
+      <p className="text-center text-sm text-gray-300 mt-3">
+        Al continuar con Google aceptás los <Link to="/terminos" target="_blank" className="text-cyan underline underline-offset-4">Términos</Link> y la{' '}
+        <Link to="/privacidad" target="_blank" className="text-cyan underline underline-offset-4">Política de Privacidad</Link>.
+      </p>
       <OrDivider />
       <form onSubmit={submit} className="space-y-4">
         <Field label="Email">
@@ -46,6 +50,9 @@ export default function Login() {
           <input type="password" required autoComplete="current-password" className={inputCls} value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })} />
         </Field>
+        <div className="text-right -mt-1">
+          <Link to="/recuperar" className="inline-flex items-center min-h-11 text-cyan underline underline-offset-4 font-semibold text-[15px]">¿Olvidaste tu contraseña?</Link>
+        </div>
         <Alert>{error}</Alert>
         <Button type="submit" className="w-full" disabled={busy}>{busy ? 'INGRESANDO…' : 'INGRESAR'}</Button>
       </form>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Clock, Pencil, Plus, Trash2 } from 'lucide-react';
 import api, { errMsg } from '../../lib/api';
-import { Alert, Button, Card, Field, Loading, Modal, PageTitle, inputCls } from '../../components/ui';
+import { Alert, Button, Field, Loading, Modal, PageTitle, inputCls } from '../../components/ui';
 import { useConfirm } from '../../components/useConfirm';
 import { money } from '../../lib/dates';
 
@@ -27,36 +27,41 @@ export default function ServicesAdmin() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <PageTitle eyebrow="SERVICIOS" title="Qué ofrecés y a qué precio">
-          Esto es lo que el cliente elige al pedir un turno. La duración define cuántas franjas ocupa.
-        </PageTitle>
-        <Button onClick={() => setEditing({ ...EMPTY })}><Plus size={14} className="inline -mt-1 mr-1" />NUEVO SERVICIO</Button>
-      </div>
-      <Alert>{error}</Alert>
+    <div>
+      <PageTitle
+        eyebrow="SERVICIOS"
+        title="Servicios y precios"
+        actions={<Button onClick={() => setEditing({ ...EMPTY })} className="rounded-full px-7"><Plus size={22} aria-hidden="true" /> NUEVO SERVICIO</Button>}
+      >
+        Esto es lo que el cliente elige al pedir un turno. La duración define cuánto tiempo bloquea en la agenda.
+      </PageTitle>
+      <div className="mb-4"><Alert>{error}</Alert></div>
 
       {!services ? <Loading /> : (
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <ul className="grid md:grid-cols-2 2xl:grid-cols-3 gap-6">
           {services.map((s) => (
-            <Card key={s._id} className={`p-5 ${s.isActive ? '' : '!border-dashed'}`}>
-              <div className="flex justify-between items-start">
-                <h2 className="text-2xl font-bebas tracking-wider">{s.name}</h2>
-                <span className="text-cyan font-mono font-bold">{money(s.price)}</span>
-              </div>
-              <p className="text-muted text-sm my-2 min-h-[2.5rem]">{s.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-muted font-mono text-[11px] tracking-widest">
-                  {s.duration} MIN {s.isPopular && '· POPULAR'} {!s.isActive && '· OCULTO'}
-                </span>
-                <span className="flex gap-3">
-                  <button onClick={() => setEditing(s)} className="w-11 h-11 flex items-center justify-center text-gray-300 hover:text-cyan" aria-label={`Editar ${s.name}`}><Pencil size={17} aria-hidden="true" /></button>
-                  {s.isActive && <button onClick={() => remove(s)} className="w-11 h-11 flex items-center justify-center text-gray-300 hover:text-busy" aria-label={`Quitar ${s.name}`}><Trash2 size={17} aria-hidden="true" /></button>}
-                </span>
-              </div>
-            </Card>
+            <li key={s._id}>
+              <article className={`h-full flex flex-col bg-dark-surface border rounded-3xl p-7 ${s.isActive ? 'border-dark-border' : 'border-dashed border-dark-border'}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="font-sans font-extrabold text-2xl leading-tight">{s.name}</h2>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {s.isPopular && <span className="text-xs font-bold bg-cyan text-black rounded-full px-3 py-1">POPULAR</span>}
+                    {!s.isActive && <span className="text-xs font-bold border border-white/30 rounded-full px-3 py-1">OCULTO</span>}
+                  </div>
+                </div>
+                <p className="font-sans font-extrabold text-5xl text-cyan mt-5">{money(s.price)}</p>
+                <p className="flex items-center gap-2 text-gray-300 text-lg mt-2"><Clock size={20} aria-hidden="true" /> {s.duration} minutos</p>
+                <p className="text-gray-300 text-base mt-4 flex-1 min-h-[3rem]">{s.description || <span className="text-muted">Sin descripción</span>}</p>
+                <div className="mt-6 pt-5 border-t border-dark-border flex gap-3">
+                  <Button variant="ghost" onClick={() => setEditing(s)} className="flex-1"><Pencil size={18} aria-hidden="true" /> EDITAR</Button>
+                  {s.isActive && (
+                    <Button variant="ghost" onClick={() => remove(s)} className="!border-busy/60 !text-rose-200 hover:!bg-busy/10"><Trash2 size={18} aria-hidden="true" /> QUITAR</Button>
+                  )}
+                </div>
+              </article>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       <ServiceModal key={editing?._id || (editing ? 'nuevo' : 'ninguno')} service={editing} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); load(); }} />

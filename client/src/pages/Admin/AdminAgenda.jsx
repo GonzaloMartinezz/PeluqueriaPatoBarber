@@ -1,32 +1,122 @@
-import { useEffect, useState } from 'react';
-import { Mail, Phone } from 'lucide-react';
-import AgendaCalendar from '../../components/agenda/AgendaCalendar';
-import { Alert, Button, Card, Field, Modal, PageTitle, StatusBadge, inputCls } from '../../components/ui';
-import { useConfirm } from '../../components/useConfirm';
+import { useEffect, useMemo, useState } from 'react';
+import { Banknote, CalendarCheck, CalendarClock, ChevronLeft, ChevronRight, Plus, Users } from 'lucide-react';
+import { Alert, Button, Loading, PageTitle } from '../../components/ui';
 import api, { errMsg } from '../../lib/api';
-import { fmtLong, fmtShort, money, todayYmd } from '../../lib/dates';
+import {
+  fmt,
+  fmtLong,
+  monthEnd,
+  monthStart,
+  money,
+  shiftDays,
+  shiftMonths,
+  todayYmd,
+  weekEnd,
+  weekStart,
+} from '../../lib/dates';
+import { DetailModal, NewAppointmentModal } from './agenda/AppointmentModals';
+import { DayTimeline, MonthGrid, PeriodList, WeekBoard, WeekStrip } from './agenda/AgendaViews';
 
-const RANGE_LABEL = { day: 'del día', week: 'de la semana', month: 'del mes' };
+const VIEWS = [
+  ['day', 'Día'],
+  ['week', 'Semana'],
+  ['month', 'Mes'],
+];
+const PERIOD_WORD = { day: 'del día', week: 'de la semana', month: 'del mes' };
+const MAX_SKIPS = 7;
+
+// Rango que se pide al servidor: en vista día se trae la semana (alimenta la tira de días).
+function fetchRange(view, cursor) {
+  if (view === 'month') return { from: weekStart(monthStart(cursor)), to: weekEnd(monthEnd(cursor)) };
+  return { from: weekStart(cursor), to: weekEnd(cursor) };
+}
+
+function titleOf(view, cursor) {
+  if (view === 'day') return fmtLong(cursor);
+  if (view === 'week') return `${fmt(weekStart(cursor), "d 'de' MMMM")} al ${fmt(weekEnd(cursor), "d 'de' MMMM")}`;
+  return fmt(cursor, 'MMMM yyyy');
+}
+
+function Kpi({ icon: Icon, label, value, tone = 'text-cyan' }) {
+  return (
+    <div className="bg-dark-surface border border-dark-border rounded-3xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+      <span aria-hidden="true" className={`w-11 h-11 sm:w-14 sm:h-14 shrink-0 rounded-2xl bg-cyan-dim flex items-center justify-center ${tone}`}><Icon size={24} /></span>
+      <div className="min-w-0">
+        <p className="text-gray-300 text-sm font-semibold">{label}</p>
+        <p className="font-sans font-extrabold text-xl sm:text-3xl leading-tight whitespace-nowrap">{value}</p>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminAgenda() {
-  const [range, setRange] = useState({ view: 'day', from: todayYmd(), to: todayYmd() });
-  const [appts, setAppts] = useState([]);
+  const [view, setView] = useState('day');
+  const [cursor, setCursor] = useState(todayYmd());
+  const [loaded, setLoaded] = useState(null); // { key, days, appts }
   const [refreshKey, setRefreshKey] = useState(0);
   const [detail, setDetail] = useState(null); // { appt, date }
-  const [newSlot, setNewSlot] = useState(null); // { date, time }
+  const [newTurn, setNewTurn] = useState(null); // { date, time } al abrir el alta
   const [error, setError] = useState('');
+  const [skips, setSkips] = useState(0);
 
+  const { from, to } = useMemo(() => fetchRange(view, cursor), [view, cursor]);
+  const key = `${from}|${to}`;
+  const data = loaded?.key === key ? loaded : null;
   const refresh = () => setRefreshKey((k) => k + 1);
 
   useEffect(() => {
-    api.get('/admin/appointments', { params: { from: range.from, to: range.to } })
-      .then(({ data }) => setAppts(data.appointments))
-      .catch((e) => setError(errMsg(e)));
-  }, [range, refreshKey]);
+    let cancelled = false;
+    Promise.all([api.get('/admin/slots', { params: { from, to } }), api.get('/admin/appointments', { params: { from, to } })])
+      .then(([s, a]) => {
+        if (cancelled) return;
+        setError('');
+        setLoaded({ key: `${from}|${to}`, days: s.data.days, appts: a.data.appointments });
+      })
+      .catch((e) => !cancelled && setError(errMsg(e)));
+    return () => {
+      cancelled = true;
+    };
+  }, [from, to, refreshKey]);
 
-  const active = appts.filter((a) => a.status !== 'cancelled');
-  const byDate = active.reduce((acc, a) => ((acc[a.date] ||= []).push(a), acc), {});
-  const total = active.reduce((sum, a) => sum + a.price, 0);
+  // Al abrir, si hoy está cerrado (domingo, lunes, feriado) salta al próximo día con atención.
+  if (view === 'day' && data && skips < MAX_SKIPS) {
+    const current = data.days.find((d) => d.date === cursor);
+    if (current && !current.isOpen) {
+      const next = data.days.find((d) => d.date > cursor && d.isOpen);
+      setSkips(skips + 1);
+      setCursor(next ? next.date : shiftDays(weekEnd(cursor), 1));
+    } else {
+      setSkips(MAX_SKIPS);
+    }
+  }
+
+  const move = (dir) => {
+    if (view === 'month') setCursor(shiftMonths(cursor, dir));
+    else setCursor(shiftDays(cursor, dir * (view === 'week' ? 7 : 1)));
+  };
+  const openDay = (date) => {
+    setCursor(date);
+    setView('day');
+  };
+
+  // Turnos y totales del período que se está mirando (sin cancelados).
+  const inPeriod = useMemo(() => {
+    if (!data) return [];
+    const month = cursor.slice(0, 7);
+    return data.appts.filter((a) => a.status !== 'cancelled' && (view === 'day' ? a.date === cursor : view === 'week' || a.date.startsWith(month)));
+  }, [data, view, cursor]);
+
+  const stats = useMemo(() => {
+    if (!data) return null;
+    const month = cursor.slice(0, 7);
+    const days = data.days.filter((d) => (view === 'day' ? d.date === cursor : view === 'week' || d.date.startsWith(month)));
+    return {
+      turnos: inPeriod.length,
+      libres: days.reduce((s, d) => s + (d.free || 0), 0),
+      cobrado: inPeriod.filter((a) => a.status === 'completed').reduce((s, a) => s + a.price, 0),
+      estimado: inPeriod.reduce((s, a) => s + a.price, 0),
+    };
+  }, [data, inPeriod, view, cursor]);
 
   const setStatus = async (id, status) => {
     try {
@@ -38,188 +128,95 @@ export default function AdminAgenda() {
     }
   };
 
+  const dayData = data?.days.find((d) => d.date === cursor);
+  const navBtn = 'w-12 h-12 flex items-center justify-center rounded-xl border border-white/20 hover:border-cyan hover:text-cyan transition-colors';
+
   return (
-    <div className="space-y-6">
-      <PageTitle eyebrow="AGENDA" title="Turnos y clientes">
-        Tocá un horario ocupado para ver al cliente, o uno libre para cargar un turno a mano.
+    <div>
+      <PageTitle
+        eyebrow="AGENDA"
+        title="Turnos"
+        actions={<Button onClick={() => setNewTurn({ date: cursor, time: '' })} className="rounded-full px-7"><Plus size={22} aria-hidden="true" /> NUEVO TURNO</Button>}
+      >
+        Mirá quién viene, cuándo y cuánto. Tocá un turno para ver el detalle o un horario libre para cargar uno.
       </PageTitle>
-      <Alert>{error}</Alert>
 
-      <AgendaCalendar
-        admin
-        refreshKey={refreshKey}
-        onRangeChange={setRange}
-        onPickSlot={(date, time) => setNewSlot({ date, time })}
-        onPickAppt={(appt, date) => setDetail({ appt, date })}
-      />
+      <div className="mb-4"><Alert>{error}</Alert></div>
 
-      <Card className="p-5">
-        <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
-          <h2 className="text-2xl sm:text-3xl font-bebas tracking-wider">Clientes {RANGE_LABEL[range.view]}</h2>
-          <p className="text-muted text-sm">
-            <b className="text-white">{active.length}</b> turnos · estimado <b className="text-free">{money(total)}</b>
-          </p>
+      {stats && (
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+          <Kpi icon={Users} label={`Turnos ${PERIOD_WORD[view]}`} value={stats.turnos} />
+          <Kpi icon={CalendarClock} label="Horarios libres" value={stats.libres} tone="text-emerald-200" />
+          <Kpi icon={CalendarCheck} label="Cobrado" value={money(stats.cobrado)} tone="text-emerald-200" />
+          <Kpi icon={Banknote} label="Estimado" value={money(stats.estimado)} />
         </div>
-        {active.length === 0 && <p className="text-muted text-sm">No hay turnos en este período.</p>}
-        {Object.entries(byDate).map(([date, list]) => (
-          <div key={date} className="mb-4 last:mb-0">
-            <p className="text-cyan font-mono text-[11px] tracking-widest uppercase mb-1">{fmtShort(date)}</p>
-            {list.map((a) => (
-              <button
-                key={a.id}
-                onClick={() => setDetail({ appt: a, date })}
-                className="w-full text-left flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5 px-2 border-b border-dark-border/50 hover:bg-white/[0.03]"
-              >
-                <span className="font-mono text-sm w-24 text-white">{a.startTime}–{a.endTime}</span>
-                <span className="flex-1 min-w-[150px]">
-                  {a.name}
-                  {a.isGuest && <span className="ml-2 text-[11px] font-mono text-muted border border-dark-border px-1.5 rounded-sm">SIN CUENTA</span>}
-                </span>
-                <span className="text-sm text-muted min-w-[110px]">{a.serviceName}</span>
-                <span className="text-sm text-muted w-28">{a.phone}</span>
-                <span className="font-mono text-sm w-20 text-right">{money(a.price)}</span>
-                <StatusBadge status={a.status} />
-              </button>
-            ))}
+      )}
+
+      <div className="space-y-6">
+        <section aria-label="Agenda" className="bg-dark-surface border border-dark-border rounded-3xl p-5 sm:p-8">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div role="group" aria-label="Vista de la agenda" className="flex rounded-xl overflow-hidden border border-white/20">
+              {VIEWS.map(([k, label]) => (
+                <button
+                  key={k}
+                  aria-pressed={view === k}
+                  onClick={() => setView(k)}
+                  className={`min-w-24 h-12 px-5 font-bebas tracking-widest text-xl transition-colors ${view === k ? 'bg-cyan text-black' : 'text-gray-200 hover:bg-cyan-dim'}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => move(-1)} className={navBtn} aria-label={`${view === 'month' ? 'Mes' : view === 'week' ? 'Semana' : 'Día'} anterior`}><ChevronLeft size={22} aria-hidden="true" /></button>
+              <button onClick={() => setCursor(todayYmd())} className="h-12 px-6 rounded-xl border border-white/20 font-bold hover:border-cyan hover:text-cyan transition-colors">Hoy</button>
+              <button onClick={() => move(1)} className={navBtn} aria-label={`${view === 'month' ? 'Mes' : view === 'week' ? 'Semana' : 'Día'} siguiente`}><ChevronRight size={22} aria-hidden="true" /></button>
+            </div>
           </div>
-        ))}
-      </Card>
+
+          <h2 className="font-sans font-extrabold text-3xl sm:text-4xl mb-6" aria-live="polite">{titleOf(view, cursor)}</h2>
+
+          {!data ? (
+            <Loading label="Cargando agenda…" />
+          ) : (
+            <>
+              {view === 'day' && (
+                <>
+                  <div className="mb-8"><WeekStrip days={data.days} appts={data.appts} cursor={cursor} onPick={setCursor} /></div>
+                  <DayTimeline day={dayData} onPickAppt={(appt, date) => setDetail({ appt, date })} onPickFree={(date, time) => setNewTurn({ date, time })} />
+                </>
+              )}
+              {view === 'week' && (
+                <WeekBoard days={data.days} appts={data.appts} onOpenDay={openDay} onPickAppt={(appt, date) => setDetail({ appt, date })} />
+              )}
+              {view === 'month' && (
+                <MonthGrid days={data.days} appts={data.appts} cursor={cursor} onOpenDay={openDay} />
+              )}
+            </>
+          )}
+        </section>
+
+        {/* En semana y mes, el detalle de cada turno en una lista debajo (en día ya está en la línea de tiempo). */}
+        {view !== 'day' && (
+          <section aria-label={`Turnos ${PERIOD_WORD[view]}`} className="bg-dark-surface border border-dark-border rounded-3xl p-5 sm:p-8">
+            <div className="flex items-baseline justify-between gap-3 mb-6">
+              <h2 className="font-sans font-extrabold text-2xl sm:text-3xl">Turnos {PERIOD_WORD[view]}</h2>
+              <span className="text-base font-bold text-cyan">{inPeriod.length} en total</span>
+            </div>
+            {data ? <PeriodList appts={inPeriod} onPick={(appt, date) => setDetail({ appt, date })} /> : <Loading />}
+          </section>
+        )}
+      </div>
 
       <DetailModal key={detail?.appt?.id} detail={detail} onClose={() => setDetail(null)} onStatus={setStatus} onSaved={() => { setDetail(null); refresh(); }} />
-      <NewAppointmentModal key={newSlot ? `${newSlot.date}${newSlot.time}` : 'none'} slot={newSlot} onClose={() => setNewSlot(null)} onCreated={() => { setNewSlot(null); refresh(); }} />
+      {newTurn && (
+        <NewAppointmentModal
+          key={`${newTurn.date}${newTurn.time}`}
+          initial={newTurn}
+          onClose={() => setNewTurn(null)}
+          onCreated={() => { setNewTurn(null); refresh(); }}
+        />
+      )}
     </div>
-  );
-}
-
-function DetailModal({ detail, onClose, onStatus, onSaved }) {
-  const confirm = useConfirm();
-  const a = detail?.appt;
-  const [price, setPrice] = useState(a ? String(a.price) : '');
-  const [error, setError] = useState('');
-
-  if (!a) return null;
-
-  const savePrice = async () => {
-    try {
-      await api.patch(`/admin/appointments/${a.id}`, { price: Number(price) });
-      onSaved();
-    } catch (e) {
-      setError(errMsg(e));
-    }
-  };
-
-  return (
-    <Modal open onClose={onClose} title="Detalle del turno">
-      <div className="space-y-3 text-sm">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-3xl font-bebas tracking-wider">{a.name}</p>
-            <p className="text-muted">{fmtLong(detail.date)} · <span className="text-cyan font-mono">{a.startTime}–{a.endTime}</span></p>
-          </div>
-          <StatusBadge status={a.status} />
-        </div>
-        <div className="space-y-1 text-gray-300">
-          {a.phone && <p className="flex items-center gap-2"><Phone size={14} className="text-muted" /> <a href={`https://wa.me/${a.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="text-cyan">{a.phone}</a></p>}
-          {a.email && <p className="flex items-center gap-2"><Mail size={14} className="text-muted" /> {a.email}</p>}
-          <p>Servicio: <b>{a.serviceName}</b></p>
-          <p>Pago: <b>{a.paymentMethod || 'Sin especificar'}</b></p>
-          {a.notes && <p className="border-l-2 border-cyan/40 pl-3 text-muted">{a.notes}</p>}
-        </div>
-
-        <Field label="Precio cobrado ($)" hint="Ajustalo si hubo descuento o propina.">
-          <div className="flex gap-2">
-            <input type="number" min="0" className={inputCls} value={price} onChange={(e) => setPrice(e.target.value)} />
-            <Button variant="ghost" onClick={savePrice} disabled={Number(price) === a.price}>GUARDAR</Button>
-          </div>
-        </Field>
-        <Alert>{error}</Alert>
-
-        <div className="flex flex-wrap gap-2 pt-2">
-          {a.status !== 'completed' && <Button variant="success" onClick={() => onStatus(a.id, 'completed')}>MARCAR COMPLETADO</Button>}
-          {a.status === 'completed' && <Button variant="ghost" onClick={() => onStatus(a.id, 'confirmed')}>REABRIR</Button>}
-          <Button
-            variant="danger"
-            onClick={async () =>
-              (await confirm({ title: 'Cancelar turno', message: `¿Cancelar el turno de ${a.name}? El horario queda libre.`, confirmLabel: 'CANCELAR TURNO', cancelLabel: 'NO, VOLVER' })) &&
-              onStatus(a.id, 'cancelled')
-            }
-          >
-            CANCELAR TURNO
-          </Button>
-        </div>
-      </div>
-    </Modal>
-  );
-}
-
-function NewAppointmentModal({ slot, onClose, onCreated }) {
-  const [services, setServices] = useState([]);
-  const [clients, setClients] = useState([]);
-  const [methods, setMethods] = useState([]);
-  const [form, setForm] = useState({ serviceId: '', clientId: '', guestName: '', guestPhone: '', paymentMethod: '', notes: '' });
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    if (!slot) return;
-    Promise.all([api.get('/admin/services'), api.get('/admin/clients'), api.get('/admin/config')]).then(([s, c, cfg]) => {
-      const active = s.data.services.filter((x) => x.isActive);
-      setServices(active);
-      setClients(c.data.clients);
-      setMethods(cfg.data.config.paymentMethods.filter((p) => p.enabled).map((p) => p.name));
-      setForm((f) => ({ ...f, serviceId: f.serviceId || active[0]?._id || '' }));
-    }).catch((e) => setError(errMsg(e)));
-  }, [slot]);
-
-  if (!slot) return null;
-  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
-
-  const submit = async (e) => {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-    try {
-      await api.post('/admin/appointments', { ...form, date: slot.date, startTime: slot.time, clientId: form.clientId || undefined });
-      setForm({ serviceId: form.serviceId, clientId: '', guestName: '', guestPhone: '', paymentMethod: '', notes: '' });
-      onCreated();
-    } catch (err) {
-      setError(err.response?.data?.errors?.[0]?.message || errMsg(err));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Modal open onClose={onClose} title="Nuevo turno">
-      <form onSubmit={submit} className="space-y-4">
-        <p className="text-muted text-sm">{fmtLong(slot.date)} · <span className="text-cyan font-mono">{slot.time}</span></p>
-        <Field label="Servicio">
-          <select className={inputCls} value={form.serviceId} onChange={set('serviceId')} required>
-            {services.map((s) => <option key={s._id} value={s._id}>{s.name} — {money(s.price)} ({s.duration} min)</option>)}
-          </select>
-        </Field>
-        <Field label="Cliente registrado">
-          <select className={inputCls} value={form.clientId} onChange={set('clientId')}>
-            <option value="">— Cliente sin cuenta —</option>
-            {clients.map((c) => <option key={c.id} value={c.id}>{c.name} {c.lastName} · {c.email}</option>)}
-          </select>
-        </Field>
-        {!form.clientId && (
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Nombre"><input className={inputCls} value={form.guestName} onChange={set('guestName')} required /></Field>
-            <Field label="Teléfono"><input className={inputCls} value={form.guestPhone} onChange={set('guestPhone')} /></Field>
-          </div>
-        )}
-        <Field label="Método de pago">
-          <select className={inputCls} value={form.paymentMethod} onChange={set('paymentMethod')}>
-            <option value="">Sin especificar</option>
-            {methods.map((m) => <option key={m}>{m}</option>)}
-          </select>
-        </Field>
-        <Field label="Notas"><input className={inputCls} value={form.notes} onChange={set('notes')} maxLength={500} /></Field>
-        <Alert>{error}</Alert>
-        <Button type="submit" className="w-full" disabled={busy}>{busy ? 'GUARDANDO…' : 'CARGAR TURNO'}</Button>
-      </form>
-    </Modal>
   );
 }
