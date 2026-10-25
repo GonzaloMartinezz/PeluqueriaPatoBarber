@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 const KEY = 'pb_theme';
-const META_COLOR = { light: '#f4f6fa', dark: '#090a0e' };
+const META_COLOR = { light: '#eaf6fd', dark: '#07111c' };
 
 // El tema inicial ya lo aplicó el script de index.html; acá solo se lee.
 const current = () => (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');

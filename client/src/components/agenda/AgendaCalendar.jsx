@@ -130,7 +130,7 @@ export default function AgendaCalendar({
   const navBtn = 'w-11 h-11 flex items-center justify-center border border-white/20 rounded-sm hover:border-cyan hover:text-cyan';
 
   return (
-    <section className="bg-dark-surface border border-dark-border rounded-md" aria-label="Agenda">
+    <section className="bg-dark-surface border border-dark-border rounded-3xl" aria-label="Agenda">
       <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 border-b border-dark-border">
         <div role="group" aria-label="Vista de la agenda" className="flex rounded-sm overflow-hidden border border-white/20">
           {VIEWS.map(([k, label]) => (

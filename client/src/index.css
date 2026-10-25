@@ -1,19 +1,22 @@
 @import "tailwindcss";
 
 /*
-  Paleta: negro azulado + cian de marca. Los bordes son neutros (el cian queda
-  para foco, selección y acciones). Verde / rojo se usan solo para la agenda y
-  siempre acompañados de texto, ícono o patrón (nunca solo color).
+  Paleta: celeste (cielo) + naranja. El celeste es el color de fondo y de los encabezados;
+  el naranja es el color de acción (botones, selección, enlaces).
+  Los tokens conservan el nombre "cyan" por historia: hoy "cyan" = NARANJA de marca.
+  Verde / rojo se usan solo para la agenda y siempre con texto, ícono o patrón (nunca solo color).
 */
 @theme {
-  --color-cyan: #00e5ff;
-  --color-cyan-dim: rgba(0, 229, 255, 0.12);
-  --color-cyan-mid: rgba(0, 229, 255, 0.35);
-  --color-dark-bg: #090a0e;
-  --color-dark-surface: #11131a;
-  --color-dark-surface2: #1a1d27;
-  --color-dark-border: rgba(255, 255, 255, 0.11);
-  --color-muted: #9ca3b8;
+  --color-cyan: #fb923c;
+  --color-cyan-dim: rgba(251, 146, 60, 0.14);
+  --color-cyan-mid: rgba(251, 146, 60, 0.4);
+  --color-sky: #7dd3fc;
+  --color-sky-dim: rgba(125, 211, 252, 0.12);
+  --color-dark-bg: #07111c;
+  --color-dark-surface: #0d1b2a;
+  --color-dark-surface2: #14283d;
+  --color-dark-border: rgba(125, 211, 252, 0.17);
+  --color-muted: #9db4c8;
   --color-free: #34d399;
   --color-busy: #fb7185;
 
@@ -30,25 +33,32 @@
 */
 :root {
   color-scheme: dark;
+  /* Degradé del encabezado celeste (igual en ambos temas; su texto es siempre azul oscuro). */
+  --sky-from: #bae6fd;
+  --sky-via: #7dd3fc;
+  --sky-to: #38bdf8;
+  --on-sky: #062a44;
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --color-dark-bg: #f4f6fa;
+  --color-dark-bg: #eaf6fd;
   --color-dark-surface: #ffffff;
-  --color-dark-surface2: #eceff5;
-  --color-dark-border: rgba(15, 23, 42, 0.14);
-  --color-muted: #566074;
-  --color-cyan: #0e7490;
-  --color-cyan-dim: rgba(14, 116, 144, 0.1);
-  --color-cyan-mid: rgba(14, 116, 144, 0.35);
+  --color-dark-surface2: #dff0fb;
+  --color-dark-border: rgba(3, 105, 161, 0.18);
+  --color-muted: #476176;
+  --color-cyan: #c2410c;
+  --color-cyan-dim: rgba(234, 88, 12, 0.1);
+  --color-cyan-mid: rgba(234, 88, 12, 0.4);
+  --color-sky: #0369a1;
+  --color-sky-dim: rgba(3, 105, 161, 0.1);
   --color-free: #047857;
   --color-busy: #e11d48;
-  --color-white: #0f172a;
-  --color-gray-100: #1e293b;
-  --color-gray-200: #334155;
-  --color-gray-300: #475569;
-  --color-gray-400: #566074;
+  --color-white: #082f49;
+  --color-gray-100: #0c3a57;
+  --color-gray-200: #1e3d52;
+  --color-gray-300: #365266;
+  --color-gray-400: #476176;
   --color-emerald-100: #065f46;
   --color-emerald-200: #047857;
   --color-green-400: #047857;
@@ -62,13 +72,14 @@
 /* Zonas que siempre son oscuras (la foto de portada), aunque el sitio esté en modo claro. */
 [data-theme="dark"] {
   color-scheme: dark;
-  --color-dark-bg: #090a0e;
-  --color-dark-surface: #11131a;
-  --color-dark-surface2: #1a1d27;
-  --color-dark-border: rgba(255, 255, 255, 0.11);
-  --color-muted: #9ca3b8;
-  --color-cyan: #00e5ff;
-  --color-cyan-dim: rgba(0, 229, 255, 0.12);
+  --color-dark-bg: #07111c;
+  --color-dark-surface: #0d1b2a;
+  --color-dark-surface2: #14283d;
+  --color-dark-border: rgba(125, 211, 252, 0.17);
+  --color-muted: #9db4c8;
+  --color-cyan: #fb923c;
+  --color-cyan-dim: rgba(251, 146, 60, 0.14);
+  --color-sky: #7dd3fc;
   --color-white: #ffffff;
   --color-gray-100: #f3f4f6;
   --color-gray-200: #e5e7eb;
@@ -76,7 +87,7 @@
   --color-gray-400: #9ca3af;
 }
 
-/* Sobre el cian oscuro del modo claro, el texto de los botones va en blanco. */
+/* Sobre el naranja oscuro del modo claro, el texto de los botones va en blanco. */
 :root[data-theme="light"] .bg-cyan.text-black,
 :root[data-theme="light"] .bg-free.text-black,
 :root[data-theme="light"] .skip-link,
@@ -132,6 +143,18 @@
 }
 
 @layer components {
+  /* Encabezado celeste de las pantallas del cliente. */
+  /* Blancos reales (en modo claro "white" es la tinta de texto) para vidrio sobre el celeste. */
+  .glass { background-color: rgba(255, 255, 255, 0.5); }
+  .glass-strong { background-color: rgba(255, 255, 255, 0.78); }
+  .ring-glass { --tw-ring-color: rgba(255, 255, 255, 0.85); }
+  .sky-header {
+    background-image:
+      radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.55), transparent 45%),
+      linear-gradient(160deg, var(--sky-from) 0%, var(--sky-via) 50%, var(--sky-to) 100%);
+    color: var(--on-sky);
+  }
+
   /* Franja ocupada: rayas + color, para que no dependa solo del rojo. */
   .slot-busy {
     background-image: repeating-linear-gradient(

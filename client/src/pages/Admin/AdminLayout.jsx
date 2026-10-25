@@ -27,11 +27,11 @@ export default function AdminLayout() {
   return (
     <div className="min-h-dvh bg-dark-bg lg:flex">
       {/* Barra superior (celular) */}
-      <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-14 bg-dark-surface/95 backdrop-blur border-b border-dark-border">
-        <Link to="/" className="text-cyan font-bebas text-2xl tracking-widest">PATO BARBER</Link>
+      <header className="sky-header lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-14 rounded-b-2xl">
+        <Link to="/" className="font-bebas text-2xl tracking-widest">PATO BARBER</Link>
         <div className="flex items-center">
-          <ThemeToggle />
-          <button onClick={logout} className="flex items-center justify-center min-w-11 min-h-11 text-gray-300 hover:text-white" aria-label="Cerrar sesión">
+          <ThemeToggle onSky />
+          <button onClick={logout} className="flex items-center justify-center min-w-11 min-h-11 rounded-full hover:bg-[rgba(255,255,255,0.5)]" aria-label="Cerrar sesión">
             <LogOut size={18} aria-hidden="true" />
           </button>
         </div>
@@ -39,9 +39,9 @@ export default function AdminLayout() {
 
       {/* Barra lateral (escritorio) */}
       <aside className="hidden lg:flex lg:flex-col w-64 min-h-dvh bg-dark-surface border-r border-dark-border sticky top-0 h-dvh">
-        <div className="p-5 border-b border-dark-border">
-          <Link to="/" className="text-cyan font-bebas text-3xl tracking-widest block">PATO BARBER</Link>
-          <span className="text-muted font-mono text-xs tracking-widest">PANEL DE ADMINISTRADOR</span>
+        <div className="sky-header p-5 rounded-br-3xl">
+          <Link to="/" className="font-bebas text-3xl tracking-widest block">PATO BARBER</Link>
+          <span className="font-mono text-xs font-bold tracking-widest">PANEL DE ADMINISTRADOR</span>
         </div>
         <nav aria-label="Panel de administrador" className="flex flex-col gap-1 p-3 flex-1">
           {ITEMS.map(([to, label, Icon, end]) => (

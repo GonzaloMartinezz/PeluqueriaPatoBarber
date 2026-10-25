@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '../../components/Navbar';
-import { Alert, Button, Card, Loading, PageTitle, StatusBadge } from '../../components/ui';
+import { CalendarPlus } from 'lucide-react';
+import ClientShell from '../../components/ClientShell';
+import ThemeToggle from '../../components/ThemeToggle';
+import { Alert, Button, Loading, StatusBadge } from '../../components/ui';
 import { useConfirm } from '../../components/useConfirm';
 import api, { errMsg } from '../../lib/api';
 import { fmtLong, money, todayYmd } from '../../lib/dates';
@@ -31,42 +33,59 @@ export default function MyAppointments() {
   const history = items?.filter((a) => !upcoming.includes(a));
 
   const Row = ({ a, canCancel }) => (
-    <Card className="p-4 flex flex-wrap items-center justify-between gap-3">
+    <li className="bg-dark-surface border border-dark-border rounded-3xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <p className="font-bebas text-xl tracking-wider">{fmtLong(a.date)} · <span className="text-cyan">{a.startTime}</span></p>
-        <p className="text-muted text-sm">{a.serviceName} · {money(a.price)} · {a.paymentMethod}</p>
+        <p className="font-sans font-extrabold text-lg leading-tight">
+          {fmtLong(a.date)} · <span className="text-cyan">{a.startTime} hs</span>
+        </p>
+        <p className="text-gray-300 text-sm mt-0.5">{a.serviceName} · {money(a.price)} ARS · {a.paymentMethod}</p>
       </div>
       <div className="flex items-center gap-3">
         <StatusBadge status={a.status} />
-        {canCancel && <Button variant="ghost" onClick={() => cancel(a._id)}>CANCELAR</Button>}
+        {canCancel && <Button variant="ghost" className="rounded-full" onClick={() => cancel(a._id)}>CANCELAR</Button>}
       </div>
-    </Card>
+    </li>
   );
 
   return (
-    <div className="min-h-screen bg-dark-bg">
-      <Navbar />
-      <main id="main" className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        <div className="flex flex-wrap items-end justify-between gap-4 mb-2">
-          <PageTitle eyebrow="HISTORIAL" title="Mis turnos" />
-          <Link to="/reservar" className="mb-6"><Button>NUEVO TURNO</Button></Link>
+    <ClientShell>
+      <header className="sky-header rounded-b-[2rem] md:rounded-b-[2.5rem] px-5 pt-5 pb-7">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="md:hidden font-bebas text-2xl tracking-widest py-2">PATO BARBER</Link>
+            <ThemeToggle onSky className="ml-auto" />
+          </div>
+          <p className="font-mono text-xs font-bold tracking-[0.25em] uppercase mt-3">Historial</p>
+          <h1 className="font-sans font-extrabold text-4xl sm:text-5xl leading-tight" style={{ color: 'var(--on-sky)' }}>Mis turnos</h1>
         </div>
+      </header>
+
+      <div className="px-4 pt-6 max-w-3xl mx-auto pb-8">
         <Alert>{error}</Alert>
         {!items ? <Loading /> : (
           <>
-            <h2 className="text-2xl font-bebas tracking-wider mb-3">Próximos</h2>
-            <div className="space-y-3 mb-10">
-              {upcoming.length ? upcoming.map((a) => <Row key={a._id} a={a} canCancel />) : <p className="text-muted text-sm">No tenés turnos próximos.</p>}
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h2 className="font-sans font-extrabold text-2xl text-cyan">Próximos</h2>
+              <Link to="/reservar">
+                <Button className="rounded-full"><CalendarPlus size={18} aria-hidden="true" /> NUEVO TURNO</Button>
+              </Link>
             </div>
+            <ul className="space-y-3 mb-10">
+              {upcoming.length ? upcoming.map((a) => <Row key={a._id} a={a} canCancel />) : (
+                <li className="text-gray-300 text-sm bg-dark-surface border border-dashed border-dark-border rounded-3xl p-6 text-center">
+                  No tenés turnos próximos. ¡Reservá el siguiente!
+                </li>
+              )}
+            </ul>
             {history.length > 0 && (
               <>
-                <h2 className="text-2xl font-bebas tracking-wider mb-3">Anteriores</h2>
-                <div className="space-y-3">{history.map((a) => <Row key={a._id} a={a} />)}</div>
+                <h2 className="font-sans font-extrabold text-2xl text-cyan mb-3">Anteriores</h2>
+                <ul className="space-y-3">{history.map((a) => <Row key={a._id} a={a} />)}</ul>
               </>
             )}
           </>
         )}
-      </main>
-    </div>
+      </div>
+    </ClientShell>
   );
 }

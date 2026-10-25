@@ -47,7 +47,7 @@ export function Field({ label, hint, children, className = '' }) {
 }
 
 export const Card = ({ className = '', children }) => (
-  <div className={`bg-dark-surface border border-dark-border rounded-md ${className}`}>{children}</div>
+  <div className={`bg-dark-surface border border-dark-border rounded-2xl ${className}`}>{children}</div>
 );
 
 export const Eyebrow = ({ children }) => (
