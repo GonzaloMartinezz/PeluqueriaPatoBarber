@@ -28,7 +28,7 @@ const CollabSection = () => {
             <span aria-hidden="true" className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-white/25" />
             <div className="relative">
               <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase block mb-3">// Trabajemos juntos</span>
-              <h2 id="collab-title" className="font-sans font-extrabold text-4xl sm:text-5xl leading-tight">
+              <h2 id="collab-title" className="text-inherit font-sans font-extrabold text-4xl sm:text-5xl leading-tight">
                 ¿Querés <span className="text-[#062a44]">colaborar</span> con Pato Barber?
               </h2>
               <p className="text-lg font-medium mt-4 max-w-md">Elegí qué tenés en mente y escribinos. Respondemos personalmente.</p>

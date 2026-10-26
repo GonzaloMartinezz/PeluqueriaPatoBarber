@@ -10,6 +10,7 @@ import ServicesSection from './ServicesSection';
 import InstagramSection from './InstagramSection';
 import CollabSection from './CollabSection';
 import LocationSection from './LocationSection';
+import ReviewsSection from './ReviewsSection';
 
 const WORDS = ['Skin fade', 'Perfilado de barba', 'Taper cut', 'Coloración', 'Platinado', 'Corte clásico'];
 
@@ -29,7 +30,7 @@ const Marquee = () => (
 const LandingPage = () => {
   const b = useBusiness();
   const handle = (b?.instagram || 'patobarber.pc').replace(/^@/, '').trim();
-  const col = 'font-mono text-xs font-bold tracking-widest uppercase mb-3 opacity-80';
+  const col = 'text-inherit font-mono text-xs font-bold tracking-widest uppercase mb-3 opacity-80';
   const a = 'block py-1.5 font-semibold hover:underline underline-offset-4';
 
   return (
@@ -43,6 +44,7 @@ const LandingPage = () => {
         <InstagramSection />
         <CollabSection />
         <LocationSection />
+        <ReviewsSection />
       </main>
 
       <footer className="px-3 sm:px-5 pb-4">

@@ -31,7 +31,7 @@ export default function HowItWorks() {
             >
               <span aria-hidden="true" className="absolute -right-2 -top-6 font-sans font-extrabold text-[9rem] leading-none opacity-15">{i + 1}</span>
               <span aria-hidden="true" className="relative w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center mb-5"><Icon size={26} /></span>
-              <h3 className="relative font-sans font-extrabold text-2xl">
+              <h3 className="relative text-inherit font-sans font-extrabold text-2xl">
                 <span className="sr-only">Paso {i + 1}: </span>{title}
               </h3>
               <p className="relative mt-2 text-lg leading-snug font-medium">{text}</p>
