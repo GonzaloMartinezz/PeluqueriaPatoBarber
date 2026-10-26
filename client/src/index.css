@@ -184,6 +184,10 @@
     filter: none !important;
   }
 
+  /* Cinta de servicios que se desplaza sola. */
+  .marquee { animation: marquee 32s linear infinite; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
   .skip-link {
     @apply fixed left-3 top-3 z-[100] -translate-y-20 rounded-sm bg-cyan px-4 py-2 font-bebas tracking-widest text-black transition-transform focus:translate-y-0;
   }

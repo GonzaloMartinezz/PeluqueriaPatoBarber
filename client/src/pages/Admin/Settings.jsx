@@ -111,7 +111,16 @@ export default function Settings() {
           <Field label="Nombre del peluquero"><input className={inputCls} value={cfg.barberName} onChange={setField('barberName')} /></Field>
           <Field label="Dirección" className="sm:col-span-2"><input className={inputCls} value={cfg.address} onChange={setField('address')} /></Field>
           <Field label="Teléfono / WhatsApp"><input className={inputCls} value={cfg.phone} onChange={setField('phone')} /></Field>
-          <Field label="Instagram"><input className={inputCls} value={cfg.instagram} onChange={setField('instagram')} placeholder="@patobarber" /></Field>
+          <Field label="Instagram"><input className={inputCls} value={cfg.instagram} onChange={setField('instagram')} placeholder="@patobarber.pc" /></Field>
+          <Field label="Reels de Instagram para la portada" hint="Un enlace por línea (hasta 6). Abrí el reel en Instagram, tocá Compartir → Copiar enlace y pegalo acá." className="sm:col-span-2">
+            <textarea
+              rows={4}
+              className={inputCls}
+              placeholder="https://www.instagram.com/reel/XXXXXXXXXXX/"
+              value={(cfg.reels || []).join('\n')}
+              onChange={(e) => setCfg({ ...cfg, reels: e.target.value.split('\n') })}
+            />
+          </Field>
         </div>
       </Section>
 

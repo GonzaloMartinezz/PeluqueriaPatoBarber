@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import useAuth from '../store/auth';
 import ThemeToggle from './ThemeToggle';
+import Logo from './Logo';
 
 const Navbar = () => {
   const [openFor, setOpenFor] = useState(null);
@@ -27,11 +28,15 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 bg-dark-surface/90 backdrop-blur-md border-b border-dark-border">
       <nav aria-label="Principal" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="text-cyan font-bebas text-2xl tracking-widest">PATO BARBER</Link>
+          <Link to="/" className="flex items-center gap-2.5 text-cyan font-bebas text-2xl tracking-widest">
+            <Logo className="w-10 h-10" /> PATO BARBER
+          </Link>
 
           {/* Escritorio */}
           <div className="hidden md:flex items-center gap-6 lg:gap-8">
             <a href="/#servicios" className={link}>SERVICIOS</a>
+            <a href="/#instagram" className={link}>INSTAGRAM</a>
+            <a href="/#colaborar" className={link}>COLABORÁ</a>
             <a href="/#ubicacion" className={link}>UBICACIÓN</a>
             {user && <Link to="/mis-turnos" className={link}>MIS TURNOS</Link>}
             {user && <Link to="/mi-cuenta" className={link}>MI CUENTA</Link>}

@@ -4,7 +4,7 @@ import { ArrowRight, Clock } from 'lucide-react';
 const ServiceCard = ({ id, name, description, price, duration, isPopular }) => {
   return (
     <article
-      className={`bg-dark-surface border rounded-md p-6 relative flex flex-col w-full transition-colors hover:border-cyan/60 ${
+      className={`bg-dark-surface border rounded-3xl p-6 relative flex flex-col w-full transition-colors hover:border-cyan/60 ${
         isPopular ? 'border-cyan/50' : 'border-dark-border'
       }`}
     >
@@ -15,8 +15,8 @@ const ServiceCard = ({ id, name, description, price, duration, isPopular }) => {
       )}
 
       <div className="flex justify-between items-start gap-3 mb-3">
-        <h3 className="text-2xl text-white font-bebas tracking-wider">{name}</h3>
-        <span className="text-cyan font-mono text-lg font-bold whitespace-nowrap">${price}</span>
+        <h3 className="text-xl text-white font-sans font-extrabold">{name}</h3>
+        <span className="text-cyan font-sans font-extrabold text-xl whitespace-nowrap">${price}</span>
       </div>
 
       <p className="text-gray-300 text-sm leading-relaxed mb-6 flex-1">{description}</p>

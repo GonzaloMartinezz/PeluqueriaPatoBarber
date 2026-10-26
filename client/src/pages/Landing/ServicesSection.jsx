@@ -6,24 +6,17 @@ import api from '../../lib/api';
 // Se muestran mientras carga (o si falla) el listado real del administrador.
 const fallbackServices = [
   {
-    name: "Fade Clásico",
-    description: "Corte degradado con navaja, precisión milimétrica y peinado final con productos premium.",
-    price: "8.000",
+    name: "Corte de pelo",
+    description: "Corte a tu medida con degradé a navaja, lavado y peinado final.",
+    price: "12.000",
     duration: 45,
-    isPopular: false
-  },
-  {
-    name: "Corte + Barba",
-    description: "El combo completo. Diseño de barba, toalla caliente y fade a elección con terminación profesional.",
-    price: "11.000",
-    duration: 60,
     isPopular: true
   },
   {
-    name: "Solo Barba",
-    description: "Alineación, rebaje y perfilado con navaja. Hidratación final con aceites esenciales.",
-    price: "5.500",
-    duration: 30,
+    name: "Teñido / Coloración",
+    description: "Coloración profesional con matizado y baño de crema reparador. Precio aproximado.",
+    price: "50.000",
+    duration: 120,
     isPopular: false
   }
 ];
@@ -48,12 +41,12 @@ const ServicesSection = () => {
           <span className="text-cyan font-mono text-xs tracking-[0.3em] uppercase mb-2 block">
             // El menú
           </span>
-          <h2 id="services-title" className="text-5xl md:text-6xl font-bebas text-white tracking-wider">
+          <h2 id="services-title" className="font-sans font-extrabold text-4xl md:text-5xl text-white">
             Servicios
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {services.map((service, index) => (
             <motion.div
               key={service.id || index}
