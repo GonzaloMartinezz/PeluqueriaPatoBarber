@@ -1,38 +1,22 @@
-import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Clock, Instagram, MapPin, Navigation, Phone } from 'lucide-react';
 import { Magnetic, Reveal } from '../../components/motion';
+import TikTokIcon from '../../components/TikTokIcon';
 import { EASE } from '../../lib/ease';
 import useBusiness, { DAY_LABELS, todayKey, todayLine } from '../../lib/useBusiness';
 
-const social =
-  'btn-shine flex-1 min-h-12 px-4 rounded-full border border-dark-border bg-dark-surface flex items-center justify-center gap-2 text-gray-100 hover:text-cyan hover:border-cyan/60 active:scale-95 transition-all font-semibold';
+const net =
+  'btn-shine group flex-1 min-h-14 px-4 rounded-2xl flex items-center justify-center gap-2.5 font-bold active:scale-95 hover:-translate-y-1 hover:shadow-xl transition-all';
 
-// Anillos que se expanden alrededor del pin (efecto radar).
-const Radar = () => (
-  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-    {[0, 1, 2].map((i) => (
-      <motion.span
-        key={i}
-        className="absolute rounded-full border-2 border-[#fb923c]"
-        style={{ width: 90, height: 90 }}
-        initial={{ scale: 0.4, opacity: 0.8 }}
-        animate={{ scale: 3.2, opacity: 0 }}
-        transition={{ duration: 3, delay: i * 1, repeat: Infinity, ease: 'easeOut' }}
-      />
-    ))}
-  </span>
-);
-
+// Información de la barbería (dirección, horarios, redes) junto a un mapa grande ya cargado.
 const LocationSection = () => {
   const b = useBusiness();
   const address = b?.address || 'Batalla de Chacabuco 1159, San Miguel de Tucumán';
-  const handle = (b?.instagram || 'patobarber.pc').replace(/^@/, '').trim();
+  const ig = (b?.instagram || 'patobarber.pc').replace(/^@/, '').trim();
+  const tt = (b?.tiktok || 'patobarber5').replace(/^@/, '').trim();
   const phoneDigits = b?.phone?.replace(/\D/g, '');
   const today = todayKey();
   const status = todayLine(b);
-  // El mapa de Google recién se carga si la persona lo pide: así Google no recibe la visita de quien no lo mira.
-  const [showMap, setShowMap] = useState(false);
 
   return (
     <section id="ubicacion" className="relative py-16 sm:py-24 bg-dark-bg overflow-hidden" aria-labelledby="loc-title">
@@ -43,7 +27,7 @@ const LocationSection = () => {
           <h2 id="loc-title" className="font-sans font-extrabold text-4xl md:text-6xl text-white">
             Ubicación y <span className="text-cyan">horarios</span>
           </h2>
-          <p className="text-gray-300 text-lg mt-3 max-w-xl mx-auto">Pasá por la barbería: te esperamos con turno o sin turno, según disponibilidad.</p>
+          <p className="text-gray-300 text-lg mt-3 max-w-xl mx-auto">Pasá por la barbería y seguinos en redes para ver nuestros trabajos.</p>
         </Reveal>
 
         <div className="grid lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] gap-5">
@@ -53,7 +37,7 @@ const LocationSection = () => {
               <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#fed7aa] via-[#fdba74] to-[#fb923c] text-[#2a1000] p-6 sm:p-7">
                 <span aria-hidden="true" className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white/30" />
                 <div className="relative flex items-start gap-4">
-                  <span aria-hidden="true" className="relative w-14 h-14 rounded-2xl bg-[#062a44] text-[#fb923c] flex items-center justify-center shrink-0">
+                  <span aria-hidden="true" className="w-14 h-14 rounded-2xl bg-[#062a44] text-[#fb923c] flex items-center justify-center shrink-0">
                     <motion.span animate={{ y: [0, -4, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}><MapPin size={26} /></motion.span>
                   </span>
                   <div>
@@ -97,7 +81,7 @@ const LocationSection = () => {
                 {b ? (
                   <dl>
                     {DAY_LABELS.map(([key, label], di) => {
-                      const h = b.workingHours[key];
+                      const h = b.workingHours?.[key];
                       const now = key === today;
                       return (
                         <motion.div
@@ -111,24 +95,30 @@ const LocationSection = () => {
                         >
                           {now && <span aria-hidden="true" className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-cyan" />}
                           <dt>{label}{now && <span className="ml-2 text-cyan font-mono text-[11px] tracking-widest">HOY</span>}</dt>
-                          <dd className="text-right">{h?.isOpen ? h.shifts.map((t) => `${t.open} – ${t.close}`).join('  ·  ') : 'Cerrado'}</dd>
+                          <dd className="text-right">{h?.isOpen && h.shifts?.length ? h.shifts.map((t) => `${t.open} – ${t.close}`).join('  ·  ') : 'Cerrado'}</dd>
                         </motion.div>
                       );
                     })}
                   </dl>
                 ) : (
-                  <p className="text-muted">Cargando horarios…</p>
+                  <p className="text-muted" role="status">Cargando horarios…</p>
                 )}
               </div>
             </Reveal>
 
             <Reveal delay={0.2}>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a href={`https://www.instagram.com/${handle}/`} target="_blank" rel="noreferrer" className={social}>
-                  <Instagram size={18} aria-hidden="true" /> @{handle}<span className="sr-only"> (se abre en una pestaña nueva)</span>
-                </a>
+              <div className="rounded-[2rem] border border-dark-border bg-dark-surface p-5 sm:p-6">
+                <p className="font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-cyan mb-3">Seguinos</p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a href={`https://www.instagram.com/${ig}/`} target="_blank" rel="noreferrer" className={`${net} bg-gradient-to-br from-[#fdba74] to-[#f97316] text-[#1c0a00]`}>
+                    <Instagram size={20} aria-hidden="true" className="transition-transform group-hover:rotate-12" /> Instagram<span className="sr-only"> @{ig} (se abre en una pestaña nueva)</span>
+                  </a>
+                  <a href={`https://www.tiktok.com/@${tt}`} target="_blank" rel="noreferrer" className={`${net} bg-gradient-to-br from-[#bae6fd] to-[#38bdf8] text-[#062a44]`}>
+                    <TikTokIcon size={20} className="transition-transform group-hover:rotate-12" /> TikTok<span className="sr-only"> @{tt} (se abre en una pestaña nueva)</span>
+                  </a>
+                </div>
                 {phoneDigits && (
-                  <a href={`https://wa.me/${phoneDigits}`} target="_blank" rel="noreferrer" className={social}>
+                  <a href={`https://wa.me/${phoneDigits}`} target="_blank" rel="noreferrer" className="btn-shine mt-3 flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-dark-border text-gray-100 font-semibold hover:text-cyan hover:border-cyan/60 active:scale-95 transition-all">
                     <Phone size={18} aria-hidden="true" /> WhatsApp<span className="sr-only"> (se abre en una pestaña nueva)</span>
                   </a>
                 )}
@@ -136,55 +126,19 @@ const LocationSection = () => {
             </Reveal>
           </div>
 
-          {/* Mapa grande */}
+          {/* Mapa grande, ya cargado */}
           <Reveal y={40} delay={0.1} className="order-1 lg:order-2">
             <div className="relative h-full min-h-[440px] lg:min-h-[720px] rounded-[2rem] overflow-hidden border border-dark-border bg-dark-surface shadow-2xl">
-              <AnimatePresence mode="wait">
-                {showMap ? (
-                  <motion.iframe
-                    key="map"
-                    initial={{ opacity: 0, scale: 1.03 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6 }}
-                    title={`Mapa: ${address}`}
-                    src={`https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`}
-                    className="map-frame absolute inset-0 w-full h-full border-0"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
-                ) : (
-                  <motion.div key="poster" exit={{ opacity: 0 }} className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-6 text-center overflow-hidden">
-                    {/* Plano estilizado */}
-                    <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-[#0b2a42] via-[#0d1b2a] to-[#07111c]" />
-                    <span aria-hidden="true" className="absolute inset-0 opacity-40" style={{ backgroundImage: 'linear-gradient(rgba(125,211,252,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(125,211,252,0.18) 1px, transparent 1px)', backgroundSize: '56px 56px' }} />
-                    <svg aria-hidden="true" className="absolute inset-0 w-full h-full opacity-40" viewBox="0 0 800 700" preserveAspectRatio="xMidYMid slice">
-                      <motion.path d="M-20 520 C 200 420 320 560 520 380 S 760 300 840 240" fill="none" stroke="#fb923c" strokeWidth="5" strokeLinecap="round" strokeDasharray="2 14" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2.4, ease: 'easeInOut' }} />
-                      <motion.path d="M120 -20 C 220 200 180 380 360 700" fill="none" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" strokeDasharray="2 14" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2.4, delay: 0.4, ease: 'easeInOut' }} />
-                    </svg>
-                    <div className="relative w-28 h-28 flex items-center justify-center">
-                      <Radar />
-                      <motion.span
-                        initial={{ y: -80, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 160, damping: 11, delay: 0.3 }}
-                        className="relative w-20 h-20 rounded-full bg-cyan text-black flex items-center justify-center shadow-[0_15px_40px_rgba(251,146,60,0.5)]"
-                      >
-                        <MapPin size={38} aria-hidden="true" />
-                      </motion.span>
-                    </div>
-                    <p className="relative text-white font-sans font-extrabold text-2xl sm:text-3xl max-w-md leading-tight">{address}</p>
-                    <Magnetic>
-                      <button
-                        type="button"
-                        onClick={() => setShowMap(true)}
-                        className="btn-shine pulse-ring relative min-h-14 px-10 rounded-full bg-cyan text-black font-bebas tracking-widest text-2xl shadow-xl hover:bg-white active:scale-95 transition-all"
-                      >
-                        VER MAPA
-                      </button>
-                    </Magnetic>
-                    <p className="relative text-muted text-sm max-w-xs">Al ver el mapa se carga Google Maps y Google recibe tu visita.</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-cyan/60">
+                <motion.span animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 1.6, repeat: Infinity }}><MapPin size={44} /></motion.span>
+              </span>
+              <iframe
+                title={`Mapa: ${address}`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`}
+                className="map-frame absolute inset-0 w-full h-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
           </Reveal>
         </div>

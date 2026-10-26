@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Instagram } from 'lucide-react';
+import TikTokIcon from '../../components/TikTokIcon';
 import Navbar from '../../components/Navbar';
 import Logo from '../../components/Logo';
 import { CutDivider, Reveal, ScrollProgress } from '../../components/motion';
@@ -80,8 +81,11 @@ const LandingPage = () => {
             </div>
             <div>
               <h2 className={col}>Seguinos</h2>
-              <a href={`https://www.instagram.com/${handle}/`} target="_blank" rel="noreferrer" className={`${a} inline-flex items-center gap-2`}>
+              <a href={`https://www.instagram.com/${handle}/`} target="_blank" rel="noreferrer" className={`${a} flex items-center gap-2`}>
                 <Instagram size={18} aria-hidden="true" /> @{handle}<span className="sr-only"> (se abre en una pestaña nueva)</span>
+              </a>
+              <a href={`https://www.tiktok.com/@${(b?.tiktok || 'patobarber5').replace(/^@/, '').trim()}`} target="_blank" rel="noreferrer" className={`${a} flex items-center gap-2`}>
+                <TikTokIcon size={18} /> @{(b?.tiktok || 'patobarber5').replace(/^@/, '').trim()}<span className="sr-only"> en TikTok (se abre en una pestaña nueva)</span>
               </a>
             </div>
           </div>

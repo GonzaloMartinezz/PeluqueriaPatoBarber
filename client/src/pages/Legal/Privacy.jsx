@@ -46,7 +46,7 @@ export default function Privacy() {
       <P>No cedemos tus datos a terceros para sus propios fines. Sí usamos proveedores que los procesan por cuenta nuestra, solo para que el servicio funcione:</P>
       <UL>
         <li><strong>Servicio de base de datos y alojamiento</strong> (MongoDB Atlas y el proveedor donde está alojado el sitio). Tus datos se guardan en la nube; los servidores pueden estar fuera de la Argentina (por ejemplo, en Estados Unidos o la Unión Europea).</li>
-        <li><strong>Google</strong>, únicamente si elegís &ldquo;Continuar con Google&rdquo; o si cargás el mapa del local, e <strong>Instagram (Meta)</strong>, únicamente si abrís un reel de la portada (ver <Link to="/cookies" className="text-cyan underline underline-offset-4">Cookies</Link>).</li>
+        <li><strong>Google</strong>, únicamente si elegís &ldquo;Continuar con Google&rdquo; o si llegás a la sección de ubicación, donde se muestra el mapa de Google, e <strong>Instagram (Meta)</strong>, únicamente si abrís un reel de la portada (ver <Link to="/cookies" className="text-cyan underline underline-offset-4">Cookies</Link>).</li>
         <li><strong>Servicio de envío de emails</strong>, solo para enviarte el enlace de recuperación de contraseña.</li>
       </UL>
       <P>

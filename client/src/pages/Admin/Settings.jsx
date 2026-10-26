@@ -112,6 +112,7 @@ export default function Settings() {
           <Field label="Dirección" className="sm:col-span-2"><input className={inputCls} value={cfg.address} onChange={setField('address')} /></Field>
           <Field label="Teléfono / WhatsApp"><input className={inputCls} value={cfg.phone} onChange={setField('phone')} /></Field>
           <Field label="Instagram"><input className={inputCls} value={cfg.instagram} onChange={setField('instagram')} placeholder="@patobarber.pc" /></Field>
+          <Field label="TikTok"><input className={inputCls} value={cfg.tiktok || ''} onChange={setField('tiktok')} placeholder="@patobarber5" /></Field>
           <Field label="Enlace para reseñas de Google" hint="En Google Maps buscá tu negocio → Compartir → Copiar enlace (o el enlace «Obtener más reseñas» de tu perfil de Google). Si queda vacío se usa una búsqueda del local." className="sm:col-span-2">
             <input className={inputCls} value={cfg.googleReviewUrl || ''} onChange={setField('googleReviewUrl')} placeholder="https://maps.app.goo.gl/..." />
           </Field>

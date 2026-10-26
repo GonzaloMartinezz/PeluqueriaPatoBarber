@@ -42,7 +42,7 @@ export default function Cookies() {
       <UL>
         <li><strong>Google (inicio de sesión):</strong> solo se carga en las pantallas de ingreso y registro, y únicamente si Google está habilitado en el sitio. Si usás &ldquo;Continuar con Google&rdquo;, Google puede usar sus propias cookies según su <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" className="text-cyan underline underline-offset-4">política de privacidad<span className="sr-only"> (se abre en una pestaña nueva)</span></a>.</li>
         <li><strong>Instagram (Meta):</strong> los reels de la portada son enlaces: <strong>no se carga nada de Instagram hasta que tocás uno</strong>. Recién ahí salís del sitio y Instagram recibe tu visita y puede usar sus propias cookies.</li>
-        <li><strong>Google Maps:</strong> el mapa del local <strong>no se carga hasta que vos apretás &ldquo;Ver mapa&rdquo;</strong>. Recién ahí Google recibe tu visita.</li>
+        <li><strong>Google Maps:</strong> el mapa del local se carga desde Google cuando llegás a la sección &ldquo;Ubicación y horarios&rdquo;, por lo que Google recibe tu visita en ese momento.</li>
         <li>Las tipografías y las imágenes del sitio se sirven desde el propio sitio: no se comparten datos con terceros para mostrarlas.</li>
       </UL>
 
