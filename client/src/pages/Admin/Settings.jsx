@@ -62,7 +62,8 @@ export default function Settings() {
       setCfg(data.config);
       setMsg({ type: 'success', text: 'Cambios guardados.' });
     } catch (e) {
-      setMsg({ type: 'error', text: errMsg(e) });
+      setMsg({ type: 'error', text: `No se guardó nada: ${errMsg(e)}` });
+      document.getElementById('main')?.scrollIntoView({ behavior: 'smooth' });
     } finally {
       setSaving(false);
     }
@@ -101,6 +102,8 @@ export default function Settings() {
       <PageTitle eyebrow="CONFIGURACIÓN" title="Tu peluquería">
         Todo lo que cambies acá se refleja en la agenda, la reserva y la página principal.
       </PageTitle>
+
+      {msg.type === 'error' && msg.text && <Alert>{msg.text}</Alert>}
 
       <Section title="Datos del negocio">
         <div className="grid sm:grid-cols-2 gap-4">

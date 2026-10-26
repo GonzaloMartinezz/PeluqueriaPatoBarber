@@ -55,11 +55,11 @@ export const Eyebrow = ({ children }) => (
 );
 
 export const PageTitle = ({ eyebrow, title, children, actions }) => (
-  <header className="mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+  <header className="mb-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
     <div className="min-w-0">
       {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bebas tracking-wider leading-none">{title}</h1>
-      {children && <p className="text-gray-300 text-base lg:text-lg mt-3 max-w-2xl">{children}</p>}
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bebas tracking-wider leading-none">{title}</h1>
+      {children && <p className="text-gray-300 text-base mt-2 max-w-2xl">{children}</p>}
     </div>
     {actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
   </header>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import useAutoRefresh from '../../lib/useAutoRefresh';
 import { Clock, Pencil, Plus, Trash2 } from 'lucide-react';
 import api, { errMsg } from '../../lib/api';
 import { Alert, Button, Field, Loading, Modal, PageTitle, inputCls } from '../../components/ui';
@@ -15,6 +16,7 @@ export default function ServicesAdmin() {
 
   const load = () => api.get('/admin/services').then(({ data }) => setServices(data.services)).catch((e) => setError(errMsg(e)));
   useEffect(() => { load(); }, []);
+  useAutoRefresh(load);
 
   const remove = async (s) => {
     if (!(await confirm({ title: 'Quitar servicio', message: `¿Quitar "${s.name}"? Los turnos anteriores se conservan.`, confirmLabel: 'QUITAR' }))) return;

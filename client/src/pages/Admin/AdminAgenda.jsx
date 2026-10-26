@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import useAutoRefresh from '../../lib/useAutoRefresh';
 import { Banknote, CalendarCheck, CalendarClock, ChevronLeft, ChevronRight, Plus, Users } from 'lucide-react';
 import { Alert, Button, Loading, PageTitle } from '../../components/ui';
 import api, { errMsg } from '../../lib/api';
@@ -63,6 +64,7 @@ export default function AdminAgenda() {
   const key = `${from}|${to}`;
   const data = loaded?.key === key ? loaded : null;
   const refresh = () => setRefreshKey((k) => k + 1);
+  useAutoRefresh(refresh, 20000);
 
   useEffect(() => {
     let cancelled = false;

@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import useAutoRefresh from '../../lib/useAutoRefresh';
 import { format } from 'date-fns';
 import { Mail, Phone, Search, Trash2, UserCheck, UserPlus, Users } from 'lucide-react';
 import api, { errMsg } from '../../lib/api';
@@ -64,15 +65,21 @@ export default function Clients() {
   const [error, setError] = useState('');
   const confirm = useConfirm();
 
+  const load = useCallback(() => {
+    api.get('/admin/clients', { params: { q } })
+      .then(({ data }) => {
+        setClients(data.clients);
+        setError('');
+      })
+      .catch((e) => setError(errMsg(e)));
+  }, [q]);
+
   useEffect(() => {
     // Pequeña espera para no pedir en cada tecla.
-    const t = setTimeout(() => {
-      api.get('/admin/clients', { params: { q } })
-        .then(({ data }) => setClients(data.clients))
-        .catch((e) => setError(errMsg(e)));
-    }, 250);
+    const t = setTimeout(load, 250);
     return () => clearTimeout(t);
-  }, [q]);
+  }, [load]);
+  useAutoRefresh(load);
 
   const stats = useMemo(() => {
     if (!clients) return null;

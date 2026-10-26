@@ -16,7 +16,7 @@ export default function AdminLayout() {
 
   // Escritorio: barra lateral amplia. Celular: barra inferior con ícono + texto (al alcance del pulgar).
   const desktopLink = ({ isActive }) =>
-    `flex items-center gap-4 px-5 min-h-14 rounded-2xl font-sans font-bold text-[17px] transition-colors ${
+    `flex items-center gap-4 px-4 min-h-12 rounded-xl font-sans font-bold text-base transition-colors ${
       isActive ? 'bg-cyan text-black' : 'text-gray-200 hover:bg-cyan-dim hover:text-white'
     }`;
   const mobileLink = ({ isActive }) =>
@@ -38,7 +38,7 @@ export default function AdminLayout() {
       </header>
 
       {/* Barra lateral (escritorio) */}
-      <aside className="hidden lg:flex lg:flex-col w-[18rem] shrink-0 min-h-dvh bg-dark-surface border-r border-dark-border sticky top-0 h-dvh">
+      <aside className="hidden lg:flex lg:flex-col w-[15.5rem] shrink-0 min-h-dvh bg-dark-surface border-r border-dark-border sticky top-0 h-dvh">
         <div className="sky-header px-7 py-8 rounded-br-[2rem]">
           <Link to="/" className="font-bebas text-4xl tracking-widest block leading-none">PATO BARBER</Link>
           <span className="mt-2 block text-sm font-bold tracking-wide">Panel de administración</span>
@@ -78,7 +78,7 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      <main id="main" className="flex-1 min-w-0 px-4 py-6 sm:px-8 sm:py-8 xl:px-12 xl:py-10 pb-28 lg:pb-12">
+      <main id="main" className="flex-1 min-w-0 px-4 py-4 sm:px-6 sm:py-5 xl:px-8 xl:py-6 pb-28 lg:pb-8">
         <div className="max-w-[1600px] mx-auto">
           <Outlet />
         </div>
