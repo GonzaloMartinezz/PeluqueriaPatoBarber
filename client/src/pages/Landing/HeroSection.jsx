@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CalendarCheck, Clock, Scissors, Zap } from 'lucide-react';
+import { ArrowRight, CalendarCheck, ChevronDown, Clock, Scissors, Zap } from 'lucide-react';
 import Logo from '../../components/Logo';
 import { CountUp, Magnetic, Tilt } from '../../components/motion';
 import { EASE } from '../../lib/ease';
@@ -29,7 +29,7 @@ const Word = ({ i, children, className = '' }) => (
 
 // Sello giratorio con tijeras (detalle de barbería).
 const Seal = () => (
-  <div aria-hidden="true" className="absolute -top-6 -right-3 sm:-right-8 w-28 h-28 sm:w-32 sm:h-32 z-10">
+  <div aria-hidden="true" className="absolute -top-5 -right-3 sm:-right-6 w-24 h-24 sm:w-28 sm:h-28 z-10">
     <motion.svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full" animate={{ rotate: 360 }} transition={{ duration: 22, ease: 'linear', repeat: Infinity }}>
       <defs><path id="seal-path" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0" /></defs>
       <circle cx="60" cy="60" r="58" fill="#062a44" />
@@ -39,7 +39,7 @@ const Seal = () => (
     </motion.svg>
     <span className="absolute inset-0 flex items-center justify-center text-[#fb923c]">
       <motion.span animate={{ rotate: [0, -16, 0, -16, 0] }} transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 2.2 }}>
-        <Scissors size={30} />
+        <Scissors size={26} />
       </motion.span>
     </span>
   </div>
@@ -47,7 +47,7 @@ const Seal = () => (
 
 const Float = ({ delay = 0, children, className = '' }) => (
   <motion.div
-    animate={{ y: [0, -9, 0] }}
+    animate={{ y: [0, -8, 0] }}
     transition={{ duration: 5, delay, repeat: Infinity, ease: 'easeInOut' }}
     whileHover={{ scale: 1.04 }}
     className={className}
@@ -56,7 +56,7 @@ const Float = ({ delay = 0, children, className = '' }) => (
   </motion.div>
 );
 
-// Portada: panel celeste con título animado, foto con parallax e inclinación, sello giratorio y tarjetas flotantes.
+// Portada a pantalla completa: la barra de navegación flota transparente encima.
 const HeroSection = () => {
   const business = useBusiness();
   const services = useServices();
@@ -64,13 +64,14 @@ const HeroSection = () => {
 
   const root = useRef(null);
   const { scrollYProgress } = useScroll({ target: root, offset: ['start start', 'end start'] });
-  const photoY = useTransform(scrollYProgress, [0, 1], [0, -70]);
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  const photoY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const cueOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
 
   // Foco de luz que sigue al cursor.
   const mx = useMotionValue(50);
   const my = useMotionValue(25);
-  const spotlight = useMotionTemplate`radial-gradient(520px circle at ${mx}% ${my}%, rgba(255,255,255,0.6), transparent 62%)`;
+  const spotlight = useMotionTemplate`radial-gradient(560px circle at ${mx}% ${my}%, rgba(255,255,255,0.6), transparent 62%)`;
   const onMove = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
     mx.set(((e.clientX - r.left) / r.width) * 100);
@@ -89,17 +90,21 @@ const HeroSection = () => {
   const tail = ['y', 'actitud', 'urbana'];
 
   return (
-    <section ref={root} className="px-3 sm:px-5 pt-4 pb-2" aria-labelledby="hero-title">
-      <div className="max-w-7xl mx-auto">
-        <div onMouseMove={onMove} className="sky-header relative overflow-hidden rounded-[2.25rem] sm:rounded-[3rem] px-5 sm:px-10 pt-10 sm:pt-14 pb-10 sm:pb-14">
-          {/* Fondo vivo */}
-          <motion.div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ backgroundImage: spotlight }} />
-          <motion.span aria-hidden="true" className="absolute -left-24 top-1/3 w-72 h-72 rounded-full bg-[#fb923c]/35 blur-3xl" animate={{ x: [0, 40, 0], y: [0, -30, 0] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
-          <motion.span aria-hidden="true" className="absolute -right-20 -top-10 w-80 h-80 rounded-full bg-white/40 blur-3xl" animate={{ x: [0, -30, 0], y: [0, 30, 0] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
-          <span aria-hidden="true" className="pole-v hidden lg:block absolute left-5 top-10 bottom-10 w-2.5 rounded-full opacity-80" />
-          <span aria-hidden="true" className="pole-v hidden lg:block absolute right-5 top-10 bottom-10 w-2.5 rounded-full opacity-80" />
+    <section ref={root} className="relative" aria-labelledby="hero-title">
+      <div
+        onMouseMove={onMove}
+        className="sky-header relative overflow-hidden min-h-dvh flex flex-col justify-center rounded-b-[2.5rem] sm:rounded-b-[3.5rem] px-5 sm:px-10 lg:px-16 pt-28 sm:pt-32 pb-20"
+      >
+        {/* Fondo vivo */}
+        <motion.div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ backgroundImage: spotlight }} />
+        <motion.span aria-hidden="true" className="absolute -left-24 top-1/3 w-72 h-72 rounded-full bg-[#fb923c]/35 blur-3xl" animate={{ x: [0, 40, 0], y: [0, -30, 0] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
+        <motion.span aria-hidden="true" className="absolute -right-20 -top-10 w-80 h-80 rounded-full bg-white/40 blur-3xl" animate={{ x: [0, -30, 0], y: [0, 30, 0] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
+        {/* Postes discretos, pegados a los bordes y a lo alto del hero */}
+        <span aria-hidden="true" className="pole-v hidden lg:block absolute left-4 top-28 bottom-16 w-1.5 rounded-full opacity-50" />
+        <span aria-hidden="true" className="pole-v hidden lg:block absolute right-4 top-28 bottom-16 w-1.5 rounded-full opacity-50" />
 
-          <motion.div style={{ y: titleY }} className="relative text-center max-w-4xl mx-auto">
+        <div className="relative max-w-7xl mx-auto w-full">
+          <motion.div style={{ y: titleY }} className="text-center max-w-5xl mx-auto">
             <motion.span
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -113,7 +118,7 @@ const HeroSection = () => {
               San Miguel de Tucumán · Batalla de Chacabuco 1159
             </motion.span>
 
-            <h1 id="hero-title" className="font-sans font-extrabold text-4xl sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight mt-6" style={{ color: 'var(--on-sky)' }}>
+            <h1 id="hero-title" className="font-sans font-extrabold text-4xl sm:text-6xl xl:text-7xl leading-[1.08] tracking-tight mt-5" style={{ color: 'var(--on-sky)' }}>
               {words.map((w, i) => <span key={w}><Word i={i}>{w}</Word>{' '}</span>)}
               <span className="relative inline-block">
                 <Word i={4} className="text-[#c2410c]">precisión</Word>
@@ -134,7 +139,7 @@ const HeroSection = () => {
             </h1>
           </motion.div>
 
-          <div className="relative mt-10 grid md:grid-cols-[1fr_minmax(0,1.15fr)_1fr] gap-6 items-center">
+          <div className="mt-8 grid md:grid-cols-[1fr_minmax(0,1.1fr)_1fr] gap-6 lg:gap-10 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -169,7 +174,7 @@ const HeroSection = () => {
                     <div
                       role="img"
                       aria-label="Interior de la barbería con silla clásica y luz cálida"
-                      className="aspect-[4/5] rounded-[2rem] ring-8 ring-glass bg-cover bg-center shadow-[0_30px_70px_rgba(6,42,68,0.45)]"
+                      className="h-[clamp(260px,38vh,420px)] rounded-[2rem] ring-8 ring-glass bg-cover bg-center shadow-[0_30px_70px_rgba(6,42,68,0.45)]"
                       style={{ backgroundImage: `url("${PHOTO}")` }}
                     />
                   </motion.div>
@@ -192,11 +197,11 @@ const HeroSection = () => {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.8, ease: EASE }}
-              className="order-3 flex flex-col gap-4 items-center md:items-end"
+              className="order-3 flex flex-col gap-3 items-center md:items-end"
             >
               <Float className="w-full max-w-xs">
                 <div className="flex items-center gap-4 rounded-3xl bg-white/90 p-4 shadow-xl text-[#062a44]">
-                  <motion.div whileHover={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.6 }}><Logo className="w-16 h-16" /></motion.div>
+                  <motion.div whileHover={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.6 }}><Logo className="w-14 h-14" /></motion.div>
                   <div>
                     <p className="font-sans font-extrabold text-lg leading-tight">{business?.name || 'Pato Barber'}</p>
                     <p className="text-sm font-medium">Barbería · Tucumán</p>
@@ -219,7 +224,15 @@ const HeroSection = () => {
           </div>
         </div>
 
-        <ul className="mt-4 grid grid-cols-2 lg:grid-cols-4 rounded-[2rem] border border-dark-border bg-dark-surface overflow-hidden">
+        {/* Indicador de scroll */}
+        <motion.a href="#servicios" aria-label="Bajar a los servicios" style={{ opacity: cueOpacity }} className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center text-[#062a44]">
+          <span className="font-mono text-[10px] font-bold tracking-[0.3em] uppercase">Deslizá</span>
+          <motion.span animate={{ y: [0, 6, 0] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}><ChevronDown size={22} aria-hidden="true" /></motion.span>
+        </motion.a>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-5 -mt-8">
+        <ul className="grid grid-cols-2 lg:grid-cols-4 rounded-[2rem] border border-dark-border bg-dark-surface shadow-2xl overflow-hidden">
           {stats.map(([Icon, value, label], i) => (
             <motion.li
               key={label}

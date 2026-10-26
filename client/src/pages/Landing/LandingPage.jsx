@@ -38,7 +38,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-dvh bg-dark-bg">
       <ScrollProgress />
-      <Navbar />
+      <Navbar overHero />
       <main id="main">
         <HeroSection />
         <Marquee />
