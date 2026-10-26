@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { Handshake, Instagram, MessageCircle, Mic2, PartyPopper, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronRight, Instagram, MessageCircle, Mic2, PartyPopper, Sparkles } from 'lucide-react';
 import useBusiness from '../../lib/useBusiness';
 
 const DEFAULT_HANDLE = 'patobarber.pc';
@@ -10,56 +10,70 @@ const IDEAS = [
   { icon: Sparkles, title: 'Marcas y proyectos', text: 'Productos, sesiones de fotos, videos y sponsors. Contanos tu idea y la hacemos realidad.', topic: 'un proyecto con mi marca' },
 ];
 
-// Invitación a colaborar: los mensajes salen ya escritos por WhatsApp o por mensaje directo de Instagram.
+// Invitación a colaborar: elegís el tipo de propuesta y el mensaje sale ya escrito por WhatsApp o Instagram.
 const CollabSection = () => {
   const b = useBusiness();
+  const [pick, setPick] = useState(0);
   const handle = (b?.instagram || DEFAULT_HANDLE).replace(/^@/, '').trim();
   const phone = b?.phone?.replace(/\D/g, '');
-  const wa = (topic) => `https://wa.me/${phone}?text=${encodeURIComponent(`Hola Pato Barber, quiero consultar por ${topic}.`)}`;
+  const cur = IDEAS[pick];
+  const wa = `https://wa.me/${phone}?text=${encodeURIComponent(`Hola Pato Barber, quiero consultar por ${cur.topic}.`)}`;
 
   return (
     <section id="colaborar" className="py-16 sm:py-24 bg-dark-bg" aria-labelledby="collab-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 sm:mb-14 max-w-2xl">
-          <span className="text-cyan font-mono text-xs tracking-[0.3em] uppercase mb-2 block">// Trabajemos juntos</span>
-          <h2 id="collab-title" className="font-sans font-extrabold text-4xl md:text-5xl text-white leading-tight">
-            ¿Querés <span className="text-cyan">colaborar</span> con la barbería?
-          </h2>
-          <p className="text-gray-200 text-lg mt-4 leading-relaxed">
-            Si tenés un evento, sos una persona reconocida o querés hacer algo con tu marca, escribinos. Respondemos personalmente.
-          </p>
-        </div>
-
-        <ul className="grid md:grid-cols-3 gap-5">
-          {IDEAS.map(({ icon: Icon, title, text, topic }, i) => (
-            <motion.li
-              key={title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="flex flex-col rounded-3xl border border-dark-border bg-dark-surface p-6"
-            >
-              <span aria-hidden="true" className="w-14 h-14 rounded-2xl bg-cyan-dim text-cyan flex items-center justify-center mb-4"><Icon size={28} /></span>
-              <h3 className="font-sans font-extrabold text-2xl text-white">{title}</h3>
-              <p className="text-gray-300 mt-2 leading-relaxed flex-1">{text}</p>
-              <div className="flex flex-wrap gap-2 mt-5">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] rounded-[2.5rem] overflow-hidden border border-dark-border">
+          {/* Mensaje y botones */}
+          <div className="relative p-8 sm:p-12 text-[#2a1000] bg-gradient-to-br from-[#fed7aa] via-[#fdba74] to-[#fb923c] flex flex-col justify-between gap-10">
+            <span aria-hidden="true" className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-white/25" />
+            <div className="relative">
+              <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase block mb-3">// Trabajemos juntos</span>
+              <h2 id="collab-title" className="font-sans font-extrabold text-4xl sm:text-5xl leading-tight">
+                ¿Querés <span className="text-[#062a44]">colaborar</span> con Pato Barber?
+              </h2>
+              <p className="text-lg font-medium mt-4 max-w-md">Elegí qué tenés en mente y escribinos. Respondemos personalmente.</p>
+            </div>
+            <div className="relative">
+              <p className="font-mono text-xs font-bold tracking-widest uppercase mb-3">Quiero consultar por: {cur.title}</p>
+              <div className="flex flex-wrap gap-3">
                 {phone && (
-                  <a href={wa(topic)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 min-h-11 px-5 rounded-full bg-cyan text-black font-bold text-sm hover:bg-white transition-colors">
-                    <MessageCircle size={16} aria-hidden="true" /> WhatsApp<span className="sr-only"> sobre {topic} (se abre en una pestaña nueva)</span>
+                  <a href={wa} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 min-h-12 px-6 rounded-full bg-[#062a44] text-[#ffffff] font-bebas text-lg tracking-widest hover:bg-black transition-colors">
+                    <MessageCircle size={18} aria-hidden="true" /> ESCRIBIR POR WHATSAPP<span className="sr-only"> (se abre en una pestaña nueva)</span>
                   </a>
                 )}
-                <a href={`https://ig.me/m/${handle}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 min-h-11 px-5 rounded-full border border-white/25 text-white font-bold text-sm hover:border-cyan hover:text-cyan transition-colors">
-                  <Instagram size={16} aria-hidden="true" /> Mensaje<span className="sr-only"> directo sobre {topic} (se abre en una pestaña nueva)</span>
+                <a href={`https://ig.me/m/${handle}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 min-h-12 px-6 rounded-full border-2 border-[#062a44] text-[#062a44] font-bebas text-lg tracking-widest hover:bg-[#062a44] hover:text-[#ffffff] transition-colors">
+                  <Instagram size={18} aria-hidden="true" /> MENSAJE POR INSTAGRAM<span className="sr-only"> (se abre en una pestaña nueva)</span>
                 </a>
               </div>
-            </motion.li>
-          ))}
-        </ul>
+            </div>
+          </div>
 
-        <p className="mt-8 flex items-center gap-2 text-gray-300">
-          <Handshake size={20} className="text-cyan shrink-0" aria-hidden="true" /> También podés escribirnos a <b className="text-white">@{handle}</b> en Instagram.
-        </p>
+          {/* Opciones */}
+          <div className="bg-dark-surface p-4 sm:p-6 flex flex-col justify-center gap-3" role="radiogroup" aria-label="Tipo de colaboración">
+            {IDEAS.map(({ icon: Icon, title, text }, i) => {
+              const on = pick === i;
+              return (
+                <button
+                  key={title}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setPick(i)}
+                  className={`text-left flex items-center gap-4 rounded-3xl border-2 p-5 transition-all duration-300 ${
+                    on ? 'border-transparent bg-gradient-to-br from-[#bae6fd] to-[#38bdf8] text-[#062a44] shadow-xl scale-[1.02]' : 'border-dark-border bg-dark-bg text-gray-200 hover:border-sky/60'
+                  }`}
+                >
+                  <span aria-hidden="true" className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${on ? 'bg-white/70 text-[#062a44]' : 'bg-cyan-dim text-cyan'}`}><Icon size={26} /></span>
+                  <span className="flex-1">
+                    <span className={`block font-sans font-extrabold text-xl ${on ? '' : 'text-white'}`}>{title}</span>
+                    <span className={`block text-[15px] leading-snug mt-0.5 ${on ? 'font-medium' : 'text-gray-300'}`}>{text}</span>
+                  </span>
+                  <ChevronRight size={22} aria-hidden="true" className={`shrink-0 transition-transform ${on ? 'translate-x-1' : 'opacity-40'}`} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );

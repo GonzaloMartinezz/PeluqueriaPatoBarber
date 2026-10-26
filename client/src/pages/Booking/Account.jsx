@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Download, LogOut, ShieldCheck, Trash2 } from 'lucide-react';
+import { Download, DoorOpen, LogOut, ShieldCheck, Trash2 } from 'lucide-react';
 import ClientShell from '../../components/ClientShell';
 import ThemeToggle from '../../components/ThemeToggle';
 import { Alert, Button, Field, inputCls } from '../../components/ui';
@@ -83,7 +83,7 @@ function Password() {
 }
 
 export default function Account() {
-  const { user, logoutAll, deleteAccount } = useAuth();
+  const { user, logout, logoutAll, deleteAccount } = useAuth();
   const confirm = useConfirm();
   const navigate = useNavigate();
   const [error, setError] = useState('');
@@ -147,6 +147,7 @@ export default function Account() {
 
           <Section title="Privacidad y seguridad">
             <div className="flex flex-wrap gap-3">
+              <Button variant="ghost" onClick={async () => { await logout(); navigate('/', { replace: true }); }}><DoorOpen size={18} aria-hidden="true" /> CERRAR SESIÓN</Button>
               <Button variant="ghost" onClick={download}><Download size={18} aria-hidden="true" /> DESCARGAR MIS DATOS</Button>
               <Button variant="ghost" onClick={closeAll}><LogOut size={18} aria-hidden="true" /> CERRAR SESIÓN EN TODOS LADOS</Button>
             </div>

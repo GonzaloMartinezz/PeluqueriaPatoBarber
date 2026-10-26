@@ -11,7 +11,7 @@ const csp = (apiOrigin) =>
     "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
     "font-src 'self'",
     "img-src 'self' data: https://*.googleusercontent.com",
-    "frame-src https://accounts.google.com https://www.google.com https://www.instagram.com",
+    "frame-src https://accounts.google.com https://www.google.com",
     `connect-src 'self' https://accounts.google.com ${apiOrigin}`.trim(),
     "object-src 'none'",
     "base-uri 'self'",

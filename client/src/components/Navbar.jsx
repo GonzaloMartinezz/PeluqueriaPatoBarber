@@ -1,90 +1,86 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Instagram, LayoutDashboard, Menu, UserRound, X } from 'lucide-react';
 import useAuth from '../store/auth';
+import useBusiness from '../lib/useBusiness';
 import ThemeToggle from './ThemeToggle';
 import Logo from './Logo';
 
+// Barra superior flotante: Servicios · Ubicación · Mis turnos · Instagram · tema · Reservar.
 const Navbar = () => {
   const [openFor, setOpenFor] = useState(null);
   const user = useAuth((s) => s.user);
-  const logout = useAuth((s) => s.logout);
-  const navigate = useNavigate();
+  const business = useBusiness();
   const location = useLocation();
 
   // El menú móvil queda abierto solo para la página donde se abrió: al navegar se cierra.
   const isOpen = openFor === location.key;
   const setIsOpen = (open) => setOpenFor(open ? location.key : null);
 
-  const exit = async () => {
-    await logout();
-    navigate('/');
-  };
+  const handle = (business?.instagram || 'patobarber.pc').replace(/^@/, '').trim();
+  const isAdmin = user?.role === 'admin';
 
-  const link = 'inline-flex items-center gap-1.5 min-h-11 text-gray-200 hover:text-cyan font-mono text-xs tracking-widest transition-colors';
-  const cta = 'inline-flex items-center justify-center min-h-11 bg-cyan text-black font-bebas px-6 rounded-sm hover:bg-white transition-colors text-base tracking-widest';
+  const link = 'inline-flex items-center gap-1.5 min-h-11 px-3 rounded-full text-gray-100 hover:text-cyan font-semibold text-sm transition-colors';
+  const icon = 'w-11 h-11 inline-flex items-center justify-center rounded-full text-gray-200 hover:text-cyan hover:bg-cyan-dim transition-colors';
+  const cta = 'inline-flex items-center justify-center min-h-11 bg-cyan text-black font-bebas px-6 rounded-full hover:bg-white transition-colors text-lg tracking-widest';
+
+  const ig = (
+    <a href={`https://www.instagram.com/${handle}/`} target="_blank" rel="noreferrer" className={icon} aria-label="Instagram de Pato Barber (se abre en una pestaña nueva)">
+      <Instagram size={20} aria-hidden="true" />
+    </a>
+  );
+  const account = user ? (
+    <Link to="/mi-cuenta" className={icon} aria-label="Mi cuenta"><UserRound size={20} aria-hidden="true" /></Link>
+  ) : (
+    <Link to="/login" className={icon} aria-label="Ingresar"><UserRound size={20} aria-hidden="true" /></Link>
+  );
 
   return (
-    <header className="sticky top-0 z-50 bg-dark-surface/90 backdrop-blur-md border-b border-dark-border">
-      <nav aria-label="Principal" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 px-3 sm:px-5 pt-3">
+      <nav aria-label="Principal" className="max-w-7xl mx-auto rounded-full bg-dark-surface/90 backdrop-blur-md border border-dark-border shadow-[0_8px_30px_rgba(0,0,0,0.25)] pl-3 pr-2">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2.5 text-cyan font-bebas text-2xl tracking-widest">
             <Logo className="w-10 h-10" /> PATO BARBER
           </Link>
 
           {/* Escritorio */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
-            <a href="/#servicios" className={link}>SERVICIOS</a>
-            <a href="/#instagram" className={link}>INSTAGRAM</a>
-            <a href="/#colaborar" className={link}>COLABORÁ</a>
-            <a href="/#ubicacion" className={link}>UBICACIÓN</a>
-            {user && <Link to="/mis-turnos" className={link}>MIS TURNOS</Link>}
-            {user && <Link to="/mi-cuenta" className={link}>MI CUENTA</Link>}
-            {user?.role === 'admin' && (
-              <Link to="/admin" className={link}>
-                <LayoutDashboard size={14} aria-hidden="true" /> PANEL
-              </Link>
-            )}
-            <Link to="/reservar" className={cta}>RESERVAR</Link>
-            <ThemeToggle />
-            {user ? (
-              <div className="flex items-center gap-2">
-                <span className="text-gray-200 text-sm">{user.name}</span>
-                <button onClick={exit} className="w-11 h-11 flex items-center justify-center text-gray-300 hover:text-white" aria-label="Cerrar sesión">
-                  <LogOut size={18} aria-hidden="true" />
-                </button>
-              </div>
-            ) : (
-              <Link to="/login" className={link}>INGRESAR</Link>
-            )}
+          <div className="hidden md:flex items-center gap-1">
+            <a href="/#servicios" className={link}>Servicios</a>
+            <a href="/#ubicacion" className={link}>Ubicación</a>
+            {user && !isAdmin && <Link to="/mis-turnos" className={link}>Mis turnos</Link>}
+            {isAdmin && <Link to="/admin" className={link}><LayoutDashboard size={15} aria-hidden="true" /> Panel</Link>}
+          </div>
+          <div className="hidden md:flex items-center gap-1">
+            {ig}
+            <ThemeToggle className="rounded-full w-11 h-11 hover:bg-cyan-dim" />
+            {account}
+            <Link to="/reservar" className={`${cta} ml-1`}>RESERVAR</Link>
           </div>
 
-          {/* Botón móvil */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden w-11 h-11 -mr-2 flex items-center justify-center text-gray-200 hover:text-white"
-            aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
-            aria-expanded={isOpen}
-            aria-controls="menu-movil"
-          >
-            {isOpen ? <X size={26} aria-hidden="true" /> : <Menu size={26} aria-hidden="true" />}
-          </button>
+          {/* Celular */}
+          <div className="md:hidden flex items-center gap-0.5">
+            {ig}
+            <ThemeToggle className="rounded-full w-11 h-11" />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={icon}
+              aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={isOpen}
+              aria-controls="menu-movil"
+            >
+              {isOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
+            </button>
+          </div>
         </div>
 
         {isOpen && (
-          <div id="menu-movil" className="md:hidden border-t border-dark-border py-3 flex flex-col">
-            <a href="/#servicios" className={`${link} py-3`}>SERVICIOS</a>
-            <a href="/#ubicacion" className={`${link} py-3`}>UBICACIÓN</a>
-            {user && <Link to="/mis-turnos" className={`${link} py-3`}>MIS TURNOS</Link>}
-            {user && <Link to="/mi-cuenta" className={`${link} py-3`}>MI CUENTA</Link>}
-            {user?.role === 'admin' && <Link to="/admin" className={`${link} py-3`}>PANEL DE ADMINISTRADOR</Link>}
-            {user ? (
-              <button onClick={exit} className={`${link} py-3`}>CERRAR SESIÓN ({user.name})</button>
-            ) : (
-              <Link to="/login" className={`${link} py-3`}>INGRESAR</Link>
-            )}
-            <ThemeToggle withLabel className="justify-start" />
-            <Link to="/reservar" className={`${cta} mt-2 min-h-12`}>RESERVAR TURNO</Link>
+          <div id="menu-movil" className="md:hidden border-t border-dark-border py-3 flex flex-col px-2">
+            <a href="/#servicios" className={`${link} py-3`}>Servicios</a>
+            <a href="/#ubicacion" className={`${link} py-3`}>Ubicación</a>
+            {user && !isAdmin && <Link to="/mis-turnos" className={`${link} py-3`}>Mis turnos</Link>}
+            {isAdmin && <Link to="/admin" className={`${link} py-3`}>Panel de administrador</Link>}
+            <Link to={user ? '/mi-cuenta' : '/login'} className={`${link} py-3`}>{user ? 'Mi cuenta' : 'Ingresar'}</Link>
+            <Link to="/reservar" className={`${cta} mt-2 mb-1 min-h-12`}>RESERVAR TURNO</Link>
           </div>
         )}
       </nav>
