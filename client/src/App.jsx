@@ -4,7 +4,7 @@ import useAuth from './store/auth';
 import { RequireAuth } from './components/guards';
 import { Loading } from './components/ui';
 import { ConfirmProvider } from './components/confirm';
-import CookieNotice from './components/CookieNotice';
+import PrivacyNotice from './components/PrivacyNotice';
 
 const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
 const Login = lazy(() => import('./pages/Auth/Login'));
@@ -63,7 +63,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-        <CookieNotice />
+        <PrivacyNotice />
       </ConfirmProvider>
     </Router>
   );

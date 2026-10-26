@@ -14,7 +14,7 @@ const seen = () => {
 
 // Aviso de cookies. La única cookie es la de sesión (necesaria), así que no hay nada para aceptar o
 // rechazar: es un aviso informativo con un enlace a la política.
-export default function CookieNotice() {
+export default function PrivacyNotice() {
   const [open, setOpen] = useState(() => !seen());
   if (!open) return null;
 
