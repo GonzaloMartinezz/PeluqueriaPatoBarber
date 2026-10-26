@@ -1,13 +1,16 @@
 import { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { MotionConfig } from 'framer-motion';
+import { LazyMotion, MotionConfig } from 'framer-motion';
+
+const loadFeatures = () => import('./lib/motionFeatures').then((m) => m.default);
 import useAuth from './store/auth';
 import { RequireAuth } from './components/guards';
 import { Loading } from './components/ui';
 import { ConfirmProvider } from './components/confirm';
 import PrivacyNotice from './components/PrivacyNotice';
+// La portada se carga junto con la app (sin pedido extra): es lo primero que ve casi todo el mundo.
+import LandingPage from './pages/Landing/LandingPage';
 
-const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
 const Login = lazy(() => import('./pages/Auth/Login'));
 const Register = lazy(() => import('./pages/Auth/Register'));
 const BookingPage = lazy(() => import('./pages/Booking/BookingPage'));
@@ -32,6 +35,7 @@ function App() {
   }, [init]);
 
   return (
+    <LazyMotion features={loadFeatures}>
     <MotionConfig reducedMotion="user">
     <Router>
       <a href="#main" className="skip-link">Saltar al contenido</a>
@@ -69,6 +73,7 @@ function App() {
       </ConfirmProvider>
     </Router>
     </MotionConfig>
+    </LazyMotion>
   );
 }
 

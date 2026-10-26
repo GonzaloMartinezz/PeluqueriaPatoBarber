@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useMotionTemplate, useMotionValue, useScroll, useTransform } from 'framer-motion';
+import { m as motion, useMotionTemplate, useMotionValue, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CalendarCheck, ChevronDown, Clock, Scissors, Zap } from 'lucide-react';
 import Logo from '../../components/Logo';
@@ -9,7 +9,7 @@ import useBusiness, { todayLine } from '../../lib/useBusiness';
 import useServices from '../../lib/useServices';
 
 // Foto propia (guardada en /public): no se pide nada a servidores de terceros.
-const PHOTO = '/hero.jpg';
+const PHOTO = '/hero.webp';
 
 const MLink = motion.create(Link);
 
@@ -20,7 +20,7 @@ const Word = ({ i, children, className = '' }) => (
       className={`inline-block ${className}`}
       initial={{ y: '115%', rotate: 4 }}
       animate={{ y: 0, rotate: 0 }}
-      transition={{ duration: 0.85, delay: 0.2 + i * 0.07, ease: EASE }}
+      transition={{ duration: 0.6, delay: 0.05 + i * 0.05, ease: EASE }}
     >
       {children}
     </motion.span>
@@ -97,8 +97,7 @@ const HeroSection = () => {
       >
         {/* Fondo vivo */}
         <motion.div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ backgroundImage: spotlight }} />
-        <motion.span aria-hidden="true" className="absolute -left-24 top-1/3 w-72 h-72 rounded-full bg-[#fb923c]/35 blur-3xl" animate={{ x: [0, 40, 0], y: [0, -30, 0] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
-        <motion.span aria-hidden="true" className="absolute -right-20 -top-10 w-80 h-80 rounded-full bg-white/40 blur-3xl" animate={{ x: [0, -30, 0], y: [0, 30, 0] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
+        <span aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(520px circle at 0% 55%, rgba(251,146,60,0.28), transparent 70%), radial-gradient(560px circle at 100% 0%, rgba(255,255,255,0.45), transparent 70%)' }} />
         {/* Postes discretos, pegados a los bordes y a lo alto del hero */}
         <span aria-hidden="true" className="pole-v hidden lg:block absolute left-4 top-28 bottom-16 w-1.5 rounded-full opacity-50" />
         <span aria-hidden="true" className="pole-v hidden lg:block absolute right-4 top-28 bottom-16 w-1.5 rounded-full opacity-50" />
@@ -131,7 +130,7 @@ const HeroSection = () => {
                     strokeLinecap="round"
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.9, delay: 1.1, ease: EASE }}
+                    transition={{ duration: 0.8, delay: 0.6, ease: EASE }}
                   />
                 </svg>
               </span>{' '}
@@ -143,7 +142,7 @@ const HeroSection = () => {
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.7, ease: EASE }}
+              transition={{ duration: 0.6, delay: 0.3, ease: EASE }}
               className="order-2 md:order-1 text-center md:text-left"
             >
               <p className="text-lg leading-relaxed font-medium max-w-md mx-auto md:mx-0">
@@ -167,15 +166,18 @@ const HeroSection = () => {
               <Tilt max={6}>
                 <div className="relative">
                   <motion.div
-                    initial={{ opacity: 0, clipPath: 'inset(100% 0% 0% 0% round 2rem)' }}
-                    animate={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0% round 2rem)' }}
-                    transition={{ duration: 1.1, delay: 0.4, ease: EASE }}
+                    initial={{ clipPath: 'inset(100% 0% 0% 0% round 2rem)' }}
+                    animate={{ clipPath: 'inset(0% 0% 0% 0% round 2rem)' }}
+                    transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
                   >
-                    <div
-                      role="img"
-                      aria-label="Interior de la barbería con silla clásica y luz cálida"
-                      className="h-[clamp(260px,38vh,420px)] rounded-[2rem] ring-8 ring-glass bg-cover bg-center shadow-[0_30px_70px_rgba(6,42,68,0.45)]"
-                      style={{ backgroundImage: `url("${PHOTO}")` }}
+                    <img
+                      src={PHOTO}
+                      width="428"
+                      height="501"
+                      alt="Fachada de la barbería Pato Barber, con el cartel y el logo del pato en la vidriera"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="h-[clamp(260px,38vh,420px)] w-full rounded-[2rem] ring-8 ring-glass object-cover object-[center_32%] shadow-[0_30px_70px_rgba(6,42,68,0.45)]"
                     />
                   </motion.div>
                   <div className="absolute inset-x-4 bottom-4">
@@ -196,7 +198,7 @@ const HeroSection = () => {
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.8, ease: EASE }}
+              transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
               className="order-3 flex flex-col gap-3 items-center md:items-end"
             >
               <Float className="w-full max-w-xs">
@@ -225,7 +227,7 @@ const HeroSection = () => {
         </div>
 
         {/* Indicador de scroll */}
-        <motion.a href="#servicios" aria-label="Bajar a los servicios" style={{ opacity: cueOpacity }} className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center text-[#062a44]">
+        <motion.a href="#servicios" aria-label="Deslizá para bajar a los servicios" style={{ opacity: cueOpacity }} className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center text-[#062a44]">
           <span className="font-mono text-[10px] font-bold tracking-[0.3em] uppercase">Deslizá</span>
           <motion.span animate={{ y: [0, 6, 0] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}><ChevronDown size={22} aria-hidden="true" /></motion.span>
         </motion.a>

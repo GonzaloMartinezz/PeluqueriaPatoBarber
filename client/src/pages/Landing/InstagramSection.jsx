@@ -1,6 +1,7 @@
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { ExternalLink, Instagram, Play } from 'lucide-react';
 import useBusiness from '../../lib/useBusiness';
+import useReels from '../../lib/useReels';
 import { Magnetic } from '../../components/motion';
 
 const DEFAULT_HANDLE = 'patobarber.pc';
@@ -23,15 +24,15 @@ const InstagramSection = () => {
   const handle = (b?.instagram || DEFAULT_HANDLE).replace(/^@/, '').trim();
   const profile = `https://www.instagram.com/${handle}/`;
   const reelsPage = `${profile}reels/`;
-  const saved = (b?.reels || []).filter(isReel).slice(0, 6);
-  const tiles = Array.from({ length: 6 }, (_, i) => ({ url: saved[i] || reelsPage, exact: !!saved[i] }));
+  const covers = useReels(); // { url, title, thumb } con la portada servida por nuestra API
+  const saved = (covers?.length ? covers : (b?.reels || []).map((url) => ({ url, title: '', thumb: '' }))).filter((r) => isReel(r.url)).slice(0, 6);
+  const tiles = Array.from({ length: 6 }, (_, i) => ({ url: saved[i]?.url || reelsPage, exact: !!saved[i], thumb: saved[i]?.thumb || '', title: saved[i]?.title || '' }));
 
   return (
-    <section id="instagram" className="py-16 sm:py-24 bg-dark-surface border-y border-dark-border" aria-labelledby="ig-title">
+    <section id="instagram" className="cv-auto py-16 sm:py-24 bg-dark-surface border-y border-dark-border" aria-labelledby="ig-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
           <div className="max-w-2xl">
-            <span className="text-cyan font-mono text-xs tracking-[0.3em] uppercase mb-2 block">// Redes</span>
             <h2 id="ig-title" className="font-sans font-extrabold text-4xl md:text-5xl text-white leading-tight">
               Mirá nuestro trabajo en <span className="text-cyan">Instagram</span>
             </h2>
@@ -54,14 +55,22 @@ const InstagramSection = () => {
                 rel="noreferrer"
                 className={`group relative flex flex-col justify-between aspect-[9/14] rounded-3xl bg-gradient-to-br p-4 overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 ${TILES[i]}`}
               >
-                <span aria-hidden="true" className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/15 group-hover:scale-125 transition-transform duration-500" />
-                <Instagram size={22} aria-hidden="true" className="relative opacity-90" />
+                {t.thumb ? (
+                  <>
+                    <img src={t.thumb} alt="" loading="lazy" decoding="async" width="640" height="1137" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/30" />
+                  </>
+                ) : (
+                  <span aria-hidden="true" className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/15 group-hover:scale-125 transition-transform duration-500" />
+                )}
+                <Instagram size={22} aria-hidden="true" className={`relative opacity-90 ${t.thumb ? 'text-[#ffffff] drop-shadow' : ''}`} />
                 <span aria-hidden="true" className="pulse-ring relative mx-auto w-16 h-16 rounded-full bg-white/90 text-[#062a44] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
                   <Play size={28} fill="currentColor" className="ml-1" />
                 </span>
-                <span className="relative">
+                <span className={`relative ${t.thumb ? 'text-[#ffffff]' : ''}`}>
                   <span className="block font-sans font-extrabold text-lg leading-tight">Reel {i + 1}</span>
-                  <span className="flex items-center gap-1 text-sm font-semibold">{t.exact ? 'Ver en Instagram' : 'Ver reels'} <ExternalLink size={13} aria-hidden="true" /></span>
+                  {t.title && <span className="block text-[13px] leading-snug font-medium opacity-95 line-clamp-2">{t.title}</span>}
+                  <span className="flex items-center gap-1 text-sm font-semibold mt-0.5">{t.exact ? 'Ver en Instagram' : 'Ver reels'} <ExternalLink size={13} aria-hidden="true" /></span>
                 </span>
                 <span className="sr-only">{t.exact ? `Reel ${i + 1}` : 'Reels de Instagram'} (se abre en una pestaña nueva)</span>
               </a>

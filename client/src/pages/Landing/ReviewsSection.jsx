@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Magnetic } from '../../components/motion';
 import { ExternalLink, MessageSquareHeart, MousePointerClick, Star, Type } from 'lucide-react';
 import useBusiness from '../../lib/useBusiness';
@@ -16,7 +16,7 @@ const ReviewsSection = () => {
   const url = b?.googleReviewUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 
   return (
-    <section id="resenas" className="py-16 sm:py-24 bg-dark-bg" aria-labelledby="rev-title">
+    <section id="resenas" className="cv-auto py-16 sm:py-24 bg-dark-bg" aria-labelledby="rev-title">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -43,7 +43,6 @@ const ReviewsSection = () => {
                 </motion.span>
               ))}
             </div>
-            <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase block mb-2">// Tu opinión cuenta</span>
             <h2 id="rev-title" className="text-inherit font-sans font-extrabold text-3xl sm:text-5xl leading-tight">
               ¿Te gustó tu corte? <br className="hidden sm:block" />Dejanos tu reseña en Google
             </h2>

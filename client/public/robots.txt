@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /mi-cuenta
+Disallow: /mis-turnos
+Disallow: /reservar
+Disallow: /restablecer
+Disallow: /api/
+
+Sitemap: https://peluqueria-pato-barber.vercel.app/sitemap.xml

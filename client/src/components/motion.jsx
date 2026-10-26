@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { animate, motion, useInView, useMotionValue, useScroll, useSpring } from 'framer-motion';
+import { animate, m as motion, useInView, useMotionValue, useScroll, useSpring } from 'framer-motion';
 import { Scissors } from 'lucide-react';
 
 import { EASE } from '../lib/ease';

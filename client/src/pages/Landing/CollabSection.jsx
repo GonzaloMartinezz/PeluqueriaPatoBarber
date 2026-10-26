@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m as motion } from 'framer-motion';
 import { Magnetic, Reveal } from '../../components/motion';
 import { ChevronRight, Instagram, MessageCircle, Mic2, PartyPopper, Sparkles } from 'lucide-react';
 import useBusiness from '../../lib/useBusiness';
@@ -22,7 +22,7 @@ const CollabSection = () => {
   const wa = `https://wa.me/${phone}?text=${encodeURIComponent(`Hola Pato Barber, quiero consultar por ${cur.topic}.`)}`;
 
   return (
-    <section id="colaborar" className="py-16 sm:py-24 bg-dark-bg" aria-labelledby="collab-title">
+    <section id="colaborar" className="cv-auto py-16 sm:py-24 bg-dark-bg" aria-labelledby="collab-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Reveal y={40}>
         <div className="grid lg:grid-cols-[1.1fr_1fr] rounded-[2.5rem] overflow-hidden border border-dark-border">
@@ -30,7 +30,6 @@ const CollabSection = () => {
           <div className="relative p-8 sm:p-12 text-[#2a1000] bg-gradient-to-br from-[#fed7aa] via-[#fdba74] to-[#fb923c] flex flex-col justify-between gap-10">
             <span aria-hidden="true" className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-white/25" />
             <div className="relative">
-              <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase block mb-3">// Trabajemos juntos</span>
               <h2 id="collab-title" className="text-inherit font-sans font-extrabold text-4xl sm:text-5xl leading-tight">
                 ¿Querés <span className="text-[#062a44]">colaborar</span> con Pato Barber?
               </h2>

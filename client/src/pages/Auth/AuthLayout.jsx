@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { CalendarCheck, Clock, Instagram, ShieldCheck } from 'lucide-react';
 import ThemeToggle from '../../components/ThemeToggle';
 import LegalLinks from '../../components/LegalLinks';

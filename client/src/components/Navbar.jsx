@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m as motion } from 'framer-motion';
 import { CalendarDays, Instagram, LayoutDashboard, MapPin, Menu, Scissors, UserRound, X } from 'lucide-react';
 import useAuth from '../store/auth';
 import useBusiness from '../lib/useBusiness';

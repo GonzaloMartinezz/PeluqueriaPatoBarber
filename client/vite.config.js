@@ -1,13 +1,15 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 
 // Política de contenido (CSP) para producción: el navegador solo ejecuta scripts propios y de Google
 // (inicio de sesión), y solo habla con la propia API. Frena la mayoría de los XSS aunque se cuele uno.
 // En desarrollo no se aplica: Vite necesita scripts en línea para el recarga en caliente.
-const csp = (apiOrigin) =>
+const csp = (apiOrigin, themeHash) =>
   [
     "default-src 'self'",
-    "script-src 'self' https://accounts.google.com/gsi/client",
+    `script-src 'self' 'sha256-${themeHash}' https://accounts.google.com/gsi/client`,
     "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
     "font-src 'self'",
     "img-src 'self' data: https://*.googleusercontent.com",
@@ -37,8 +39,19 @@ export default defineConfig(({ mode }) => {
       {
         name: 'inject-csp',
         apply: 'build',
-        transformIndexHtml: (html) =>
-          html.replace('<head>', `<head>\n    <meta http-equiv="Content-Security-Policy" content="${csp(apiOrigin)}" />`),
+        transformIndexHtml: (html, ctx) => {
+          // Las tipografías de la portada se piden desde el inicio (si no, el navegador las descubre recién al leer el CSS).
+          const fonts = Object.keys(ctx.bundle || {}).filter((f) => /(dm-sans-latin-(400|800)|bebas-neue-latin-400)-normal.*\.woff2$/.test(f))
+          const preloads = fonts.map((f) => `<link rel="preload" as="font" type="font/woff2" href="/${f}" crossorigin />`).join('\n    ')
+          // El script que fija el tema se incluye en la página (evita un pedido que frena el pintado) y se autoriza por su hash.
+          // Los saltos de línea de Windows (CRLF) se pasan a LF: así el hash coincide con lo que calcula el navegador.
+          const theme = readFileSync('public/theme-init.js', 'utf8').replace(/\r\n/g, '\n')
+          const hash = createHash('sha256').update(theme).digest('base64')
+          return html
+            .replace('<script src="/theme-init.js"></script>', `<script>${theme}</script>`)
+            .replace('</head>', `    ${preloads}\n  </head>`)
+            .replace('<head>', `<head>\n    <meta http-equiv="Content-Security-Policy" content="${csp(apiOrigin, hash)}" />`)
+        },
       },
     ],
     server: {

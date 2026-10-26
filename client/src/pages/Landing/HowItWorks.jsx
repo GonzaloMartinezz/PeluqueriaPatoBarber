@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Magnetic } from '../../components/motion';
 import { ArrowRight, CalendarDays, CheckCircle2, Scissors } from 'lucide-react';
 
@@ -11,10 +11,9 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section id="como-reservar" className="py-16 sm:py-24 bg-dark-surface/50 border-y border-dark-border" aria-labelledby="how-title">
+    <section id="como-reservar" className="cv-auto py-16 sm:py-24 bg-dark-surface/50 border-y border-dark-border" aria-labelledby="how-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10 sm:mb-14">
-          <span className="text-cyan font-mono text-xs tracking-[0.3em] uppercase mb-2 block">// Fácil y rápido</span>
           <h2 id="how-title" className="font-sans font-extrabold text-4xl md:text-5xl text-white">
             Reservá en <span className="text-cyan">3 pasos</span>
           </h2>

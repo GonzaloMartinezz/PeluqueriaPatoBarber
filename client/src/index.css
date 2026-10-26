@@ -184,6 +184,9 @@
     filter: none !important;
   }
 
+  /* Secciones largas: no se dibujan hasta que se acercan a la pantalla. */
+  .cv-auto { content-visibility: auto; contain-intrinsic-size: auto 780px; }
+
   /* Poste de barbería: rayas en movimiento. */
   .pole-bar {
     background-image: repeating-linear-gradient(-45deg, #fb923c 0 10px, #ffffff 10px 20px, #38bdf8 20px 30px, #ffffff 30px 40px);

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Clock, Instagram, MapPin, Navigation, Phone } from 'lucide-react';
 import { Magnetic, Reveal } from '../../components/motion';
 import TikTokIcon from '../../components/TikTokIcon';
@@ -19,11 +19,10 @@ const LocationSection = () => {
   const status = todayLine(b);
 
   return (
-    <section id="ubicacion" className="relative py-16 sm:py-24 bg-dark-bg overflow-hidden" aria-labelledby="loc-title">
+    <section id="ubicacion" className="cv-auto relative py-16 sm:py-24 bg-dark-bg overflow-hidden" aria-labelledby="loc-title">
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-60" style={{ backgroundImage: 'radial-gradient(var(--color-dark-border) 1px, transparent 1px)', backgroundSize: '26px 26px' }} />
       <div className="relative max-w-[88rem] mx-auto px-4 sm:px-6 lg:px-8">
         <Reveal className="text-center mb-10 sm:mb-14">
-          <span className="text-cyan font-mono text-xs tracking-[0.3em] uppercase mb-2 block">// Visitá el local</span>
           <h2 id="loc-title" className="font-sans font-extrabold text-4xl md:text-6xl text-white">
             Ubicación y <span className="text-cyan">horarios</span>
           </h2>

@@ -37,7 +37,7 @@ export default function PrivacyNotice() {
         <Cookie size={22} aria-hidden="true" className="shrink-0 text-cyan mt-0.5" />
         <span>
           Usamos <strong>una sola cookie, necesaria para mantener tu sesión</strong>, y guardamos tu preferencia de tema. No usamos publicidad ni seguimiento.{' '}
-          <Link to="/cookies" className="text-cyan underline underline-offset-4 font-semibold">Más información</Link>
+          <Link to="/cookies" className="text-cyan underline underline-offset-4 font-semibold">Más información sobre cookies</Link>
         </span>
       </p>
       <button

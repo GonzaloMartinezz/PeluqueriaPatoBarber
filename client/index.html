@@ -2,17 +2,46 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#07111c" />
     <meta name="color-scheme" content="dark light" />
     <script src="/theme-init.js"></script>
+    <title>Pato Barber · Turnos online</title>
     <meta
       name="description"
-      content="Pato Barber, Tucumán. Mirá la agenda en tiempo real y reservá tu turno online en menos de un minuto."
+      content="Pato Barber, barbería en San Miguel de Tucumán. Mirá la agenda en tiempo real y reservá tu turno online en menos de un minuto."
     />
-    <title>Pato Barber · Turnos online</title>
-    </head>
+    <link rel="canonical" href="https://peluqueria-pato-barber.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="Pato Barber" />
+    <meta property="og:title" content="Pato Barber · Turnos online" />
+    <meta property="og:description" content="Reservá tu turno en la barbería Pato Barber (San Miguel de Tucumán) en menos de un minuto." />
+    <meta property="og:url" content="https://peluqueria-pato-barber.vercel.app/" />
+    <meta property="og:image" content="https://peluqueria-pato-barber.vercel.app/hero.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" as="image" href="/hero.webp" type="image/webp" fetchpriority="high" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HairSalon",
+        "name": "Pato Barber",
+        "url": "https://peluqueria-pato-barber.vercel.app/",
+        "image": "https://peluqueria-pato-barber.vercel.app/hero.webp",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Batalla de Chacabuco 1159",
+          "addressLocality": "San Miguel de Tucumán",
+          "addressRegion": "Tucumán",
+          "addressCountry": "AR"
+        },
+        "sameAs": ["https://www.instagram.com/patobarber.pc/", "https://www.tiktok.com/@patobarber5"]
+      }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>

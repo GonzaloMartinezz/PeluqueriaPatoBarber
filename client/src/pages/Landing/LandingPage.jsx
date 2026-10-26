@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Instagram } from 'lucide-react';
 import TikTokIcon from '../../components/TikTokIcon';
 import Navbar from '../../components/Navbar';

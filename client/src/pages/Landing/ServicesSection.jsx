@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { ArrowRight, Clock, Scissors } from 'lucide-react';
 import { Tilt } from '../../components/motion';
 import useServices from '../../lib/useServices';
@@ -69,7 +69,6 @@ const ServicesSection = () => {
     <section id="servicios" className="py-16 sm:py-24 bg-dark-bg" aria-labelledby="services-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="mb-10 sm:mb-14 text-center">
-          <span className="text-cyan font-mono text-xs tracking-[0.3em] uppercase mb-2 block">// El menú</span>
           <h2 id="services-title" className="font-sans font-extrabold text-4xl md:text-5xl text-white">
             Nuestros <span className="text-cyan">servicios</span>
           </h2>

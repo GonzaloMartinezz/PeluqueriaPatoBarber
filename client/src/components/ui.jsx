@@ -50,9 +50,8 @@ export const Card = ({ className = '', children }) => (
   <div className={`bg-dark-surface border border-dark-border rounded-2xl ${className}`}>{children}</div>
 );
 
-export const Eyebrow = ({ children }) => (
-  <span className="text-cyan font-mono text-sm tracking-[0.25em] uppercase block mb-2">// {children}</span>
-);
+// Las etiquetas pequeñas con "//" se quitaron del diseño.
+export const Eyebrow = () => null;
 
 export const PageTitle = ({ eyebrow, title, children, actions }) => (
   <header className="mb-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
