@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { MotionConfig } from 'framer-motion';
 import useAuth from './store/auth';
 import { RequireAuth } from './components/guards';
 import { Loading } from './components/ui';
@@ -31,6 +32,7 @@ function App() {
   }, [init]);
 
   return (
+    <MotionConfig reducedMotion="user">
     <Router>
       <a href="#main" className="skip-link">Saltar al contenido</a>
       <ConfirmProvider>
@@ -66,6 +68,7 @@ function App() {
         <PrivacyNotice />
       </ConfirmProvider>
     </Router>
+    </MotionConfig>
   );
 }
 

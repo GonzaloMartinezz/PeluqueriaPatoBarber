@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { CalendarCheck, Clock, Instagram, ShieldCheck } from 'lucide-react';
 import ThemeToggle from '../../components/ThemeToggle';
 import LegalLinks from '../../components/LegalLinks';
@@ -18,13 +19,15 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
       <aside className="sky-header hidden lg:flex flex-col justify-between p-10 xl:p-14 rounded-r-[3rem] sticky top-0 h-dvh">
         <Link to="/" className="font-bebas text-3xl tracking-widest w-fit py-1">PATO BARBER</Link>
         <div>
-          <Logo className="w-56 h-56 xl:w-64 xl:h-64" ring />
+          <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} className="w-fit">
+            <Logo className="w-56 h-56 xl:w-64 xl:h-64" ring />
+          </motion.div>
           <h2 className="font-sans font-extrabold text-4xl xl:text-5xl leading-tight mt-8" style={{ color: 'var(--on-sky)' }}>
             Tu turno, sin vueltas.
           </h2>
           <ul className="mt-6 space-y-3 text-lg font-semibold">
             {POINTS.map(([Icon, text]) => (
-              <li key={text} className="flex items-center gap-3"><Icon size={22} aria-hidden="true" className="shrink-0" /> {text}</li>
+              <motion.li key={text} initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + POINTS.findIndex((p) => p[1] === text) * 0.15 }} className="flex items-center gap-3"><Icon size={22} aria-hidden="true" className="shrink-0" /> {text}</motion.li>
             ))}
           </ul>
         </div>
@@ -49,11 +52,11 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
         </div>
 
         <div className="w-full max-w-md px-4 -mt-10 lg:mt-0 lg:my-auto pb-10">
-          <div className="bg-dark-surface border border-dark-border rounded-3xl p-6 sm:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.25)]">
+          <motion.div initial={{ opacity: 0, y: 30, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="bg-dark-surface border border-dark-border rounded-3xl p-6 sm:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.25)]">
             <h1 className="font-sans font-extrabold text-3xl leading-tight">{title}</h1>
             <p className="text-gray-300 text-sm mt-1 mb-6">{subtitle}</p>
             {children}
-          </div>
+          </motion.div>
           <p className="mt-6 text-sm text-gray-300 text-center">{footer}</p>
           <LegalLinks className="justify-center mt-2" />
         </div>

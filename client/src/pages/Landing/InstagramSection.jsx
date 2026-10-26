@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ExternalLink, Instagram, Play } from 'lucide-react';
 import useBusiness from '../../lib/useBusiness';
+import { Magnetic } from '../../components/motion';
 
 const DEFAULT_HANDLE = 'patobarber.pc';
 
@@ -38,24 +39,24 @@ const InstagramSection = () => {
               Tocá un reel y se abre directo en Instagram. Seguinos en <b className="text-white">@{handle}</b>.
             </p>
           </div>
-          <a href={profile} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 min-h-14 px-7 rounded-full bg-cyan text-black font-bebas text-xl tracking-widest hover:bg-white transition-colors">
+          <Magnetic><a href={profile} target="_blank" rel="noreferrer" className="btn-shine inline-flex items-center justify-center gap-2 min-h-14 px-7 rounded-full bg-cyan text-black font-bebas text-xl tracking-widest shadow-xl hover:shadow-2xl active:scale-95 transition-all">
             <Instagram size={20} aria-hidden="true" /> SEGUIR @{handle.toUpperCase()}
             <span className="sr-only">(se abre en una pestaña nueva)</span>
-          </a>
+          </a></Magnetic>
         </div>
 
         <ul className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
           {tiles.map((t, i) => (
-            <motion.li key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}>
+            <motion.li key={i} initial={{ opacity: 0, y: 50, scale: 0.9 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, margin: '-40px' }} transition={{ delay: i * 0.09, duration: 0.7, ease: [0.22, 1, 0.36, 1] }} whileHover={{ y: -10, rotate: i % 2 ? 1.5 : -1.5, scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <a
                 href={t.url}
                 target="_blank"
                 rel="noreferrer"
-                className={`group relative flex flex-col justify-between aspect-[9/14] rounded-3xl bg-gradient-to-br p-4 overflow-hidden shadow-lg hover:-translate-y-1.5 hover:shadow-2xl transition-all duration-300 ${TILES[i]}`}
+                className={`group relative flex flex-col justify-between aspect-[9/14] rounded-3xl bg-gradient-to-br p-4 overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 ${TILES[i]}`}
               >
                 <span aria-hidden="true" className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/15 group-hover:scale-125 transition-transform duration-500" />
                 <Instagram size={22} aria-hidden="true" className="relative opacity-90" />
-                <span aria-hidden="true" className="relative mx-auto w-16 h-16 rounded-full bg-white/90 text-[#062a44] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                <span aria-hidden="true" className="pulse-ring relative mx-auto w-16 h-16 rounded-full bg-white/90 text-[#062a44] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
                   <Play size={28} fill="currentColor" className="ml-1" />
                 </span>
                 <span className="relative">

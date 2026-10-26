@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Magnetic } from '../../components/motion';
 import { ArrowRight, CalendarDays, CheckCircle2, Scissors } from 'lucide-react';
 
 const STEPS = [
@@ -23,14 +24,15 @@ export default function HowItWorks() {
           {STEPS.map(({ icon: Icon, title, text, fill }, i) => (
             <motion.li
               key={title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className={`relative overflow-hidden rounded-[2rem] bg-gradient-to-br p-7 sm:p-8 ${fill}`}
+              initial={{ opacity: 0, y: 50, rotate: i % 2 ? 2 : -2 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ delay: i * 0.18, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ y: -10, rotate: i % 2 ? 1.2 : -1.2 }}
+              className={`group relative overflow-hidden rounded-[2rem] bg-gradient-to-br p-7 sm:p-8 shadow-lg hover:shadow-2xl ${fill}`}
             >
-              <span aria-hidden="true" className="absolute -right-2 -top-6 font-sans font-extrabold text-[9rem] leading-none opacity-15">{i + 1}</span>
-              <span aria-hidden="true" className="relative w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center mb-5"><Icon size={26} /></span>
+              <motion.span initial={{ scale: 0.4, opacity: 0 }} whileInView={{ scale: 1, opacity: 0.15 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.18, type: 'spring', stiffness: 120 }} aria-hidden="true" className="absolute -right-2 -top-6 font-sans font-extrabold text-[9rem] leading-none">{i + 1}</motion.span>
+              <span aria-hidden="true" className="relative w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center mb-5 transition-transform duration-500 group-hover:rotate-[360deg] group-hover:scale-110"><Icon size={26} /></span>
               <h3 className="relative text-inherit font-sans font-extrabold text-2xl">
                 <span className="sr-only">Paso {i + 1}: </span>{title}
               </h3>
@@ -40,9 +42,11 @@ export default function HowItWorks() {
         </ol>
 
         <div className="mt-10 text-center">
-          <Link to="/reservar" className="inline-flex items-center justify-center gap-2 min-h-14 px-9 rounded-full bg-cyan text-black font-bebas text-xl tracking-widest hover:bg-white transition-colors">
-            EMPEZAR A RESERVAR <ArrowRight size={20} aria-hidden="true" />
-          </Link>
+          <Magnetic>
+            <Link to="/reservar" className="group btn-shine inline-flex items-center justify-center gap-2 min-h-14 px-9 rounded-full bg-cyan text-black font-bebas text-xl tracking-widest shadow-xl hover:shadow-2xl active:scale-95 transition-all">
+              EMPEZAR A RESERVAR <ArrowRight size={20} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1.5" />
+            </Link>
+          </Magnetic>
         </div>
       </div>
     </section>

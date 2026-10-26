@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Magnetic, Reveal } from '../../components/motion';
 import { ChevronRight, Instagram, MessageCircle, Mic2, PartyPopper, Sparkles } from 'lucide-react';
 import useBusiness from '../../lib/useBusiness';
 
@@ -22,6 +24,7 @@ const CollabSection = () => {
   return (
     <section id="colaborar" className="py-16 sm:py-24 bg-dark-bg" aria-labelledby="collab-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Reveal y={40}>
         <div className="grid lg:grid-cols-[1.1fr_1fr] rounded-[2.5rem] overflow-hidden border border-dark-border">
           {/* Mensaje y botones */}
           <div className="relative p-8 sm:p-12 text-[#2a1000] bg-gradient-to-br from-[#fed7aa] via-[#fdba74] to-[#fb923c] flex flex-col justify-between gap-10">
@@ -34,12 +37,16 @@ const CollabSection = () => {
               <p className="text-lg font-medium mt-4 max-w-md">Elegí qué tenés en mente y escribinos. Respondemos personalmente.</p>
             </div>
             <div className="relative">
-              <p className="font-mono text-xs font-bold tracking-widest uppercase mb-3">Quiero consultar por: {cur.title}</p>
+              <AnimatePresence mode="wait">
+                <motion.p key={cur.title} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="font-mono text-xs font-bold tracking-widest uppercase mb-3">
+                  Quiero consultar por: {cur.title}
+                </motion.p>
+              </AnimatePresence>
               <div className="flex flex-wrap gap-3">
                 {phone && (
-                  <a href={wa} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 min-h-12 px-6 rounded-full bg-[#062a44] text-[#ffffff] font-bebas text-lg tracking-widest hover:bg-black transition-colors">
+                  <Magnetic><a href={wa} target="_blank" rel="noreferrer" className="btn-shine inline-flex items-center gap-2 min-h-12 px-6 rounded-full bg-[#062a44] text-[#ffffff] font-bebas text-lg tracking-widest hover:bg-black shadow-xl active:scale-95 transition-all">
                     <MessageCircle size={18} aria-hidden="true" /> ESCRIBIR POR WHATSAPP<span className="sr-only"> (se abre en una pestaña nueva)</span>
-                  </a>
+                  </a></Magnetic>
                 )}
                 <a href={`https://ig.me/m/${handle}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 min-h-12 px-6 rounded-full border-2 border-[#062a44] text-[#062a44] font-bebas text-lg tracking-widest hover:bg-[#062a44] hover:text-[#ffffff] transition-colors">
                   <Instagram size={18} aria-hidden="true" /> MENSAJE POR INSTAGRAM<span className="sr-only"> (se abre en una pestaña nueva)</span>
@@ -53,8 +60,10 @@ const CollabSection = () => {
             {IDEAS.map(({ icon: Icon, title, text }, i) => {
               const on = pick === i;
               return (
-                <button
+                <motion.button
                   key={title}
+                  whileHover={{ x: 6 }}
+                  whileTap={{ scale: 0.98 }}
                   type="button"
                   role="radio"
                   aria-checked={on}
@@ -69,11 +78,12 @@ const CollabSection = () => {
                     <span className={`block text-[15px] leading-snug mt-0.5 ${on ? 'font-medium' : 'text-gray-300'}`}>{text}</span>
                   </span>
                   <ChevronRight size={22} aria-hidden="true" className={`shrink-0 transition-transform ${on ? 'translate-x-1' : 'opacity-40'}`} />
-                </button>
+                </motion.button>
               );
             })}
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   );

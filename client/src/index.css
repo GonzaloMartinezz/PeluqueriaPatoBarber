@@ -184,8 +184,47 @@
     filter: none !important;
   }
 
+  /* Poste de barbería: rayas en movimiento. */
+  .pole-bar {
+    background-image: repeating-linear-gradient(-45deg, #fb923c 0 10px, #ffffff 10px 20px, #38bdf8 20px 30px, #ffffff 30px 40px);
+    background-size: 56px 56px;
+    animation: pole 1.2s linear infinite;
+  }
+  @keyframes pole { to { background-position: 56px 0; } }
+
+  .pole-v {
+    background-image: repeating-linear-gradient(-45deg, #fb923c 0 10px, #ffffff 10px 20px, #0369a1 20px 30px, #ffffff 30px 40px);
+    background-size: 100% 56px;
+    animation: pole-v 1.6s linear infinite;
+  }
+  @keyframes pole-v { to { background-position: 0 56px; } }
+
+  /* Brillo que cruza el botón al pasar el mouse. */
+  .btn-shine { position: relative; overflow: hidden; isolation: isolate; }
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+    transform: translateX(-120%);
+  }
+  .btn-shine:hover::after { transform: translateX(120%); transition: transform 0.7s ease; }
+
+  /* Anillo que late para llamar la atención sobre el botón principal. */
+  .pulse-ring { animation: pulse-ring 2.2s ease-out infinite; }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.55); }
+    70%, 100% { box-shadow: 0 0 0 16px rgba(251, 146, 60, 0); }
+  }
+
+  /* Tijera que "corta" al pasar el mouse. */
+  @keyframes snip { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-18deg); } 50% { transform: rotate(8deg); } 75% { transform: rotate(-12deg); } }
+  .group:hover .snip { animation: snip 0.7s ease-in-out; }
+
   /* Cinta de servicios que se desplaza sola. */
   .marquee { animation: marquee 32s linear infinite; }
+  .marquee:hover { animation-play-state: paused; }
   @keyframes marquee { to { transform: translateX(-50%); } }
 
   .skip-link {

@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Instagram } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Logo from '../../components/Logo';
+import { CutDivider, Reveal, ScrollProgress } from '../../components/motion';
 import LegalLinks from '../../components/LegalLinks';
 import useBusiness from '../../lib/useBusiness';
 import HeroSection from './HeroSection';
@@ -35,24 +37,28 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-dvh bg-dark-bg">
+      <ScrollProgress />
       <Navbar />
       <main id="main">
         <HeroSection />
         <Marquee />
         <ServicesSection />
+        <CutDivider />
         <HowItWorks />
         <InstagramSection />
+        <CutDivider />
         <CollabSection />
         <LocationSection />
         <ReviewsSection />
       </main>
 
       <footer className="px-3 sm:px-5 pb-4">
+        <Reveal y={40}>
         <div className="sky-header max-w-7xl mx-auto rounded-[2.25rem] sm:rounded-[3rem]">
           <div className="px-6 sm:px-12 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <div className="flex items-center gap-3">
-                <Logo className="w-14 h-14" ring />
+                <motion.span whileHover={{ rotate: [0, -12, 12, 0] }} transition={{ duration: 0.6 }} className="inline-flex"><Logo className="w-14 h-14" ring /></motion.span>
                 <span className="font-bebas text-3xl tracking-widest">PATO BARBER</span>
               </div>
               <p className="mt-4 max-w-xs font-medium">Barbería en San Miguel de Tucumán. Reservá tu turno online, sin esperas.</p>
@@ -84,6 +90,7 @@ const LandingPage = () => {
             <LegalLinks className="[&_a]:!text-[#062a44]" />
           </div>
         </div>
+        </Reveal>
       </footer>
     </div>
   );

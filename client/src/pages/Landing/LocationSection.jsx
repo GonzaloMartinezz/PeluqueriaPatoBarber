@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { MapPin, Clock, Instagram, Phone, Navigation } from 'lucide-react';
+import { Magnetic, Reveal } from '../../components/motion';
 import useBusiness, { DAY_LABELS, todayKey } from '../../lib/useBusiness';
 
 const social =
@@ -24,6 +26,7 @@ const LocationSection = () => {
           </h2>
         </div>
 
+        <Reveal y={40}>
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] rounded-[2.5rem] overflow-hidden border border-dark-border bg-dark-surface">
           <div className="p-6 sm:p-10 flex flex-col gap-7">
             <div className="flex items-start gap-4">
@@ -31,14 +34,16 @@ const LocationSection = () => {
               <div>
                 <h3 className="font-sans font-extrabold text-2xl text-white">{address}</h3>
                 <p className="text-gray-300">San Miguel de Tucumán, Argentina</p>
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 mt-3 min-h-11 px-5 rounded-full bg-cyan text-black font-bebas text-lg tracking-widest hover:bg-white transition-colors"
-                >
-                  <Navigation size={16} aria-hidden="true" /> CÓMO LLEGAR <span className="sr-only">(se abre en una pestaña nueva)</span>
-                </a>
+                <Magnetic className="mt-3">
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group btn-shine inline-flex items-center gap-2 min-h-11 px-5 rounded-full bg-cyan text-black font-bebas text-lg tracking-widest shadow-lg active:scale-95 transition-all"
+                  >
+                    <Navigation size={16} aria-hidden="true" className="transition-transform duration-300 group-hover:rotate-45" /> CÓMO LLEGAR <span className="sr-only">(se abre en una pestaña nueva)</span>
+                  </a>
+                </Magnetic>
               </div>
             </div>
 
@@ -48,14 +53,14 @@ const LocationSection = () => {
                 <h3 className="font-sans font-extrabold text-2xl text-white mb-2">Horarios</h3>
                 {b ? (
                   <dl>
-                    {DAY_LABELS.map(([key, label]) => {
+                    {DAY_LABELS.map(([key, label], di) => {
                       const h = b.workingHours[key];
                       const now = key === today;
                       return (
-                        <div key={key} className={`flex justify-between gap-3 py-2 px-3 -mx-3 rounded-xl ${now ? 'bg-cyan-dim text-white font-bold' : 'text-gray-300'}`}>
+                        <motion.div key={key} initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: di * 0.05 }} whileHover={{ x: 4 }} className={`flex justify-between gap-3 py-2 px-3 -mx-3 rounded-xl ${now ? 'bg-cyan-dim text-white font-bold' : 'text-gray-300'}`}>
                           <dt>{label}{now && <span className="ml-2 text-cyan font-mono text-[11px] tracking-widest">HOY</span>}</dt>
                           <dd className="text-right">{h?.isOpen ? h.shifts.map((t) => `${t.open} – ${t.close}`).join('  ·  ') : 'Cerrado'}</dd>
-                        </div>
+                        </motion.div>
                       );
                     })}
                   </dl>
@@ -87,12 +92,12 @@ const LocationSection = () => {
               />
             ) : (
               <div className="h-full min-h-[340px] flex flex-col items-center justify-center gap-4 p-6 text-center" style={{ backgroundImage: 'radial-gradient(var(--color-dark-border) 1px, transparent 1px)', backgroundSize: '22px 22px' }}>
-                <span aria-hidden="true" className="w-20 h-20 rounded-full bg-cyan text-black flex items-center justify-center shadow-xl"><MapPin size={36} /></span>
+                <motion.span aria-hidden="true" animate={{ y: [0, -12, 0] }} transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }} className="w-20 h-20 rounded-full bg-cyan text-black flex items-center justify-center shadow-xl"><MapPin size={36} /></motion.span>
                 <p className="text-white font-sans font-extrabold text-xl max-w-xs">{address}</p>
                 <button
                   type="button"
                   onClick={() => setShowMap(true)}
-                  className="min-h-12 px-8 rounded-full bg-[#062a44] text-[#ffffff] font-bebas tracking-widest text-lg hover:bg-black transition-colors"
+                  className="btn-shine min-h-12 px-8 rounded-full bg-[#062a44] text-[#ffffff] font-bebas tracking-widest text-lg hover:bg-black shadow-xl active:scale-95 transition-all"
                 >
                   VER MAPA
                 </button>
@@ -101,6 +106,7 @@ const LocationSection = () => {
             )}
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   );

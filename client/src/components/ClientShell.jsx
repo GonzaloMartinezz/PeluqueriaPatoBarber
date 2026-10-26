@@ -3,7 +3,7 @@ import { CalendarDays, Home, MapPin, Scissors, UserRound } from 'lucide-react';
 import Navbar from './Navbar';
 import LegalLinks from './LegalLinks';
 
-const tab = 'flex-1 flex flex-col items-center justify-center gap-0.5 min-h-16 text-xs font-semibold transition-colors';
+const tab = 'flex-1 flex flex-col items-center justify-center gap-0.5 min-h-16 text-xs font-semibold transition-all active:scale-90';
 
 // Estructura de las pantallas del cliente: barra superior en escritorio y
 // navegación inferior (Inicio · Servicios · Mis turnos · Ubicación) en el celular.
